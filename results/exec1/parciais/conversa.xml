@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.5 (Python 3.11.9 on win32)" generated="2026-10-29T19:33:14.548791" rpa="false" schemaversion="5">
+<suite id="s1" name="conversa" source="C:\Users\lucio\Documents\UECE\workspace\pratica-inteligente\tests\conversa.robot">
+<kw name="Verificar Disponibilidade Da API" owner="dify_client" type="SETUP">
+<doc>Falha se a API do Dify estiver inacessível ou a chave for inválida.</doc>
+<status status="PASS" start="2026-10-29T19:33:14.646168" elapsed="0.017935"/>
+</kw>
+<test id="s1-t1" name="CT16 Nota minima referida ao doutorado" line="10">
+<kw name="Executar Caso Conversacional" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:33:14.665105" level="INFO">${caso} = {'id': 'CT16', 'categoria': 'conversa', 'comportamento_esperado': 'Usar o contexto do primeiro turno (doutorado/disciplinas) para responder ao segundo.', 'referencia_regimento': 'Arts. 31, 32 e 37', '...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:33:14.665105" elapsed="0.000000"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-29T19:33:14.666104" level="INFO">${conversa} = </msg>
+<var>${conversa}</var>
+<arg>${EMPTY}</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-29T19:33:14.665105" elapsed="0.000999"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:33:19.988692" level="INFO">Pergunta: Quantos créditos em disciplinas são exigidos no doutorado?
+Resposta (1.322 s): Para o curso de Doutorado, são exigidos um mínimo de 48 (quarenta e oito) créditos em disciplinas, além de 04 (quatro) créditos em Estágio à Docência (conforme o Art. 31º, alínea "b"). 
+
+Essa carga horária em disciplinas deve ser composta da seguinte forma (conforme o Art. 32º, inciso ii):
+* **08 (oito)** créditos em disciplinas do núcleo comum;
+* **40 (quarenta)** créditos em disciplinas específicas das linhas de pesquisa.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:33:19.990479" level="INFO">${r} = {'caso_id': 'CT16', 'rodada': 1, 'timestamp': '2026-10-29T22:33:19.988692+00:00', 'pergunta': 'Quantos créditos em disciplinas são exigidos no doutorado?', 'resposta': 'Para o curso de Doutorado, são ...</msg>
+<var>${r}</var>
+<arg>${turno}[pergunta]</arg>
+<arg>${conversa}</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:33:14.666104" elapsed="5.324375"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-29T19:33:19.991022" level="INFO">${conversa} = 543878f6-9fc0-4e6b-a000-6aebad25728a</msg>
+<var>${conversa}</var>
+<arg>${r}[conversation_id]</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-29T19:33:19.990479" elapsed="0.000543"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${turno}</arg>
+<arg>${r}[resposta]</arg>
+<arg>pular_sem_criterios=${False}</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:33:19.991022" elapsed="0.000000"/>
+</kw>
+<var name="${turno}">{'pergunta': 'Quantos créditos em disciplinas são exigidos no doutorado?', 'termos_obrigatorios': ['48']}</var>
+<status status="PASS" start="2026-10-29T19:33:14.666104" elapsed="5.324918"/>
+</iter>
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:33:29.919939" level="INFO">Pergunta: E qual é a nota mínima para ser aprovado nessas disciplinas?
+Resposta (5.926 s): Com base no documento, para ser aprovado nas disciplinas, o aluno deve obter um conceito numérico igual ou superior a 7,0 (sete), em uma escala de 0,0 a 10,0. 
+
+Essa regra está estabelecida no **Artigo 37** do capítulo referente à Frequência e Avaliação.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:33:29.919939" level="INFO">${r} = {'caso_id': 'CT16', 'rodada': 1, 'timestamp': '2026-10-29T22:33:29.918934+00:00', 'pergunta': 'E qual é a nota mínima para ser aprovado nessas disciplinas?', 'resposta': 'Com base no documento, para s...</msg>
+<var>${r}</var>
+<arg>${turno}[pergunta]</arg>
+<arg>${conversa}</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:33:19.992030" elapsed="9.927909"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-29T19:33:29.921444" level="INFO">${conversa} = 543878f6-9fc0-4e6b-a000-6aebad25728a</msg>
+<var>${conversa}</var>
+<arg>${r}[conversation_id]</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-29T19:33:29.920940" elapsed="0.000504"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${turno}</arg>
+<arg>${r}[resposta]</arg>
+<arg>pular_sem_criterios=${False}</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:33:29.921444" elapsed="0.000000"/>
+</kw>
+<var name="${turno}">{'pergunta': 'E qual é a nota mínima para ser aprovado nessas disciplinas?', 'termos_obrigatorios': [['7,0', '7.0', 'nota 7', 'sete']]}</var>
+<status status="PASS" start="2026-10-29T19:33:19.992030" elapsed="9.929414"/>
+</iter>
+<var>${turno}</var>
+<value>@{caso}[turnos]</value>
+<status status="PASS" start="2026-10-29T19:33:14.666104" elapsed="15.255340"/>
+</for>
+<arg>CT16</arg>
+<doc>Envia os turnos do caso na mesma conversa, validando cada resposta.</doc>
+<status status="PASS" start="2026-10-29T19:33:14.665105" elapsed="15.256339"/>
+</kw>
+<tag>conversa</tag>
+<status status="PASS" start="2026-10-29T19:33:14.665105" elapsed="15.256339"/>
+</test>
+<test id="s1-t2" name="CT28 Elipse doutorado para mestrado" line="11">
+<kw name="Executar Caso Conversacional" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:33:29.923462" level="INFO">${caso} = {'id': 'CT28', 'categoria': 'conversa', 'subcategoria': 'elipse', 'comportamento_esperado': "Interpretar 'E no mestrado?' e a pergunta seguinte a partir do contexto anterior.", 'referencia_regimento':...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:33:29.922452" elapsed="0.001010"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-29T19:33:29.923462" level="INFO">${conversa} = </msg>
+<var>${conversa}</var>
+<arg>${EMPTY}</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-29T19:33:29.923462" elapsed="0.000000"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:33:35.348803" level="INFO">Pergunta: Quantos créditos em disciplinas são exigidos no doutorado?
+Resposta (1.424 s): Para o Doutorado, são exigidos um mínimo de 48 (quarenta e oito) créditos em disciplinas, além de 04 (quatro) créditos em Estágio à Docência (conforme o Art. 31º, alínea "b"). 
+
+Essa carga horária em disciplinas deve ser composta da seguinte forma (conforme o Art. 32º, inciso ii):
+- 08 (oito) créditos em disciplinas do núcleo comum;
+- 40 (quarenta) créditos em disciplinas específicas das linhas de pesquisa.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:33:35.349770" level="INFO">${r} = {'caso_id': 'CT28', 'rodada': 1, 'timestamp': '2026-10-29T22:33:35.348803+00:00', 'pergunta': 'Quantos créditos em disciplinas são exigidos no doutorado?', 'resposta': 'Para o Doutorado, são exigidos ...</msg>
+<var>${r}</var>
+<arg>${turno}[pergunta]</arg>
+<arg>${conversa}</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:33:29.923462" elapsed="5.426308"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-29T19:33:35.349770" level="INFO">${conversa} = bc21adc7-5222-452c-840c-35031a8bd47d</msg>
+<var>${conversa}</var>
+<arg>${r}[conversation_id]</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-29T19:33:35.349770" elapsed="0.000000"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${turno}</arg>
+<arg>${r}[resposta]</arg>
+<arg>pular_sem_criterios=${False}</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:33:35.349770" elapsed="0.000000"/>
+</kw>
+<var name="${turno}">{'pergunta': 'Quantos créditos em disciplinas são exigidos no doutorado?', 'termos_obrigatorios': ['48']}</var>
+<status status="PASS" start="2026-10-29T19:33:29.923462" elapsed="5.426308"/>
+</iter>
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:33:42.424362" level="INFO">Pergunta: E no mestrado?
+Resposta (3.073 s): Para o Mestrado, são exigidos um total de 32 (trinta e dois) créditos em disciplinas, além de 02 (dois) créditos em Estágio à Docência (conforme o Art. 31º, alínea "a").
+
+Essa carga horária em disciplinas deve ser distribuída da seguinte forma (conforme o Art. 32º, inciso i):
+- 08 (oito) créditos em disciplinas do núcleo comum;
+- 24 (vinte e quatro) créditos em disciplinas específicas das linhas de pesquisa.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:33:42.425348" level="INFO">${r} = {'caso_id': 'CT28', 'rodada': 1, 'timestamp': '2026-10-29T22:33:42.424362+00:00', 'pergunta': 'E no mestrado?', 'resposta': 'Para o Mestrado, são exigidos um total de 32 (trinta e dois) créditos em di...</msg>
+<var>${r}</var>
+<arg>${turno}[pergunta]</arg>
+<arg>${conversa}</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:33:35.350778" elapsed="7.074570"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-29T19:33:42.425348" level="INFO">${conversa} = bc21adc7-5222-452c-840c-35031a8bd47d</msg>
+<var>${conversa}</var>
+<arg>${r}[conversation_id]</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-29T19:33:42.425348" elapsed="0.000000"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${turno}</arg>
+<arg>${r}[resposta]</arg>
+<arg>pular_sem_criterios=${False}</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:33:42.425348" elapsed="0.000000"/>
+</kw>
+<var name="${turno}">{'pergunta': 'E no mestrado?', 'termos_obrigatorios': ['24']}</var>
+<status status="PASS" start="2026-10-29T19:33:35.349770" elapsed="7.075578"/>
+</iter>
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:33:49.029376" level="INFO">Pergunta: E até que mês do curso o mestrando deve apresentar a proposta de dissertação?
+Resposta (2.601 s): O aluno de Mestrado deve apresentar a Proposta de Dissertação de Mestrado até o 16º (décimo sexto) mês do curso, conforme estabelecido no Art. 35°.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:33:49.029376" level="INFO">${r} = {'caso_id': 'CT28', 'rodada': 1, 'timestamp': '2026-10-29T22:33:49.027871+00:00', 'pergunta': 'E até que mês do curso o mestrando deve apresentar a proposta de dissertação?', 'resposta': 'O aluno de M...</msg>
+<var>${r}</var>
+<arg>${turno}[pergunta]</arg>
+<arg>${conversa}</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:33:42.425348" elapsed="6.604028"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-29T19:33:49.030571" level="INFO">${conversa} = bc21adc7-5222-452c-840c-35031a8bd47d</msg>
+<var>${conversa}</var>
+<arg>${r}[conversation_id]</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-29T19:33:49.029376" elapsed="0.001195"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${turno}</arg>
+<arg>${r}[resposta]</arg>
+<arg>pular_sem_criterios=${False}</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:33:49.030571" elapsed="0.000518"/>
+</kw>
+<var name="${turno}">{'pergunta': 'E até que mês do curso o mestrando deve apresentar a proposta de dissertação?', 'termos_obrigatorios': [['16', 'decimo sexto']]}</var>
+<status status="PASS" start="2026-10-29T19:33:42.425348" elapsed="6.605741"/>
+</iter>
+<var>${turno}</var>
+<value>@{caso}[turnos]</value>
+<status status="PASS" start="2026-10-29T19:33:29.923462" elapsed="19.107627"/>
+</for>
+<arg>CT28</arg>
+<doc>Envia os turnos do caso na mesma conversa, validando cada resposta.</doc>
+<status status="PASS" start="2026-10-29T19:33:29.922452" elapsed="19.108637"/>
+</kw>
+<tag>conversa</tag>
+<status status="PASS" start="2026-10-29T19:33:29.922452" elapsed="19.108637"/>
+</test>
+<test id="s1-t3" name="CT29 Anafora sobre membros da banca" line="12">
+<kw name="Executar Caso Conversacional" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:33:49.032096" level="INFO">${caso} = {'id': 'CT29', 'categoria': 'conversa', 'subcategoria': 'referencia_anafora', 'comportamento_esperado': "Entender que 'deles' se refere aos membros da banca de mestrado do turno anterior.", 'referenci...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:33:49.032096" elapsed="0.000000"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-29T19:33:49.032096" level="INFO">${conversa} = </msg>
+<var>${conversa}</var>
+<arg>${EMPTY}</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-29T19:33:49.032096" elapsed="0.000000"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:33:57.059683" level="INFO">Pergunta: Quantos membros deve ter a banca de defesa de dissertação de mestrado?
+Resposta (4.025 s): De acordo com o Art. 41°, § 1°, a banca de Dissertação de Mestrado deverá ser composta por, no mínimo, 03 (três) membros com titulação de doutor. 
+
+Além disso, a composição deve seguir as seguintes regras:
+- Ao menos 1 (um) membro deve ser externo à UECE.
+- Deve ser formada com pelo menos 02 (dois) membros que não sejam orientador ou coorientador.
+- O orientador do candidato será o presidente da comissão examinadora (conforme o § 3° do mesmo artigo).
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:33:57.060680" level="INFO">${r} = {'caso_id': 'CT29', 'rodada': 1, 'timestamp': '2026-10-29T22:33:57.059683+00:00', 'pergunta': 'Quantos membros deve ter a banca de defesa de dissertação de mestrado?', 'resposta': 'De acordo com o Art...</msg>
+<var>${r}</var>
+<arg>${turno}[pergunta]</arg>
+<arg>${conversa}</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:33:49.033138" elapsed="8.027542"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-29T19:33:57.060680" level="INFO">${conversa} = 357c3542-a9d2-4819-bc63-c67694d47eaf</msg>
+<var>${conversa}</var>
+<arg>${r}[conversation_id]</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-29T19:33:57.060680" elapsed="0.000000"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${turno}</arg>
+<arg>${r}[resposta]</arg>
+<arg>pular_sem_criterios=${False}</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:33:57.061183" elapsed="0.000000"/>
+</kw>
+<var name="${turno}">{'pergunta': 'Quantos membros deve ter a banca de defesa de dissertação de mestrado?', 'termos_obrigatorios': [['tres', '3 membros', '3 doutores', '3 examinadores', '3 integrantes']]}</var>
+<status status="PASS" start="2026-10-29T19:33:49.033138" elapsed="8.028045"/>
+</iter>
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:34:05.058595" level="INFO">Pergunta: Quantos deles precisam ser externos à UECE?
+Resposta (3.995 s): Para a banca de defesa de Tese de Doutorado, são necessários ao menos 2 (dois) membros externos à UECE, conforme estabelecido no § 2º do Artigo 41°. 
+
+*(Nota: O documento fornecido não especifica o número exato de membros externos necessários especificamente para a banca de dissertação de mestrado, mencionando essa exigência de 2 membros externos para o Doutorado).*
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:34:05.058595" level="INFO">${r} = {'caso_id': 'CT29', 'rodada': 1, 'timestamp': '2026-10-29T22:34:05.057232+00:00', 'pergunta': 'Quantos deles precisam ser externos à UECE?', 'resposta': 'Para a banca de defesa de Tese de Doutorado, s...</msg>
+<var>${r}</var>
+<arg>${turno}[pergunta]</arg>
+<arg>${conversa}</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:33:57.061183" elapsed="7.997412"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-29T19:34:05.060113" level="INFO">${conversa} = 357c3542-a9d2-4819-bc63-c67694d47eaf</msg>
+<var>${conversa}</var>
+<arg>${r}[conversation_id]</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-29T19:34:05.058595" elapsed="0.001518"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${turno}</arg>
+<arg>${r}[resposta]</arg>
+<arg>pular_sem_criterios=${False}</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:34:05.060113" elapsed="0.000513"/>
+</kw>
+<var name="${turno}">{'pergunta': 'Quantos deles precisam ser externos à UECE?', 'termos_obrigatorios': [['1 membro', 'um membro', 'ao menos 1', 'pelo menos 1', 'ao menos um', 'pelo menos um', '1 externo', 'um externo', '...</var>
+<status status="PASS" start="2026-10-29T19:33:57.061183" elapsed="7.999443"/>
+</iter>
+<var>${turno}</var>
+<value>@{caso}[turnos]</value>
+<status status="PASS" start="2026-10-29T19:33:49.032096" elapsed="16.028530"/>
+</for>
+<arg>CT29</arg>
+<doc>Envia os turnos do caso na mesma conversa, validando cada resposta.</doc>
+<status status="PASS" start="2026-10-29T19:33:49.032096" elapsed="16.028530"/>
+</kw>
+<tag>conversa</tag>
+<status status="PASS" start="2026-10-29T19:33:49.031089" elapsed="16.029537"/>
+</test>
+<test id="s1-t4" name="CT30 Troca de nivel na duracao da apresentacao" line="13">
+<kw name="Executar Caso Conversacional" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:34:05.061160" level="INFO">${caso} = {'id': 'CT30', 'categoria': 'conversa', 'subcategoria': 'troca_de_nivel', 'comportamento_esperado': 'Responder ao segundo turno com os valores do doutorado, sem repetir os do mestrado.', 'referencia_r...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:34:05.061160" elapsed="0.000000"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-29T19:34:05.061160" level="INFO">${conversa} = </msg>
+<var>${conversa}</var>
+<arg>${EMPTY}</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-29T19:34:05.061160" elapsed="0.000000"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:34:11.625187" level="INFO">Pergunta: Quanto tempo dura a apresentação oral na defesa de mestrado?
+Resposta (2.561 s): De acordo com o Art. 43, § 1º, o candidato ao título de Mestre deverá fazer uma apresentação oral com duração mínima de 30 (trinta) minutos e máxima de 40 (quarenta) minutos.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:34:11.625187" level="INFO">${r} = {'caso_id': 'CT30', 'rodada': 1, 'timestamp': '2026-10-29T22:34:11.624196+00:00', 'pergunta': 'Quanto tempo dura a apresentação oral na defesa de mestrado?', 'resposta': 'De acordo com o Art. 43, § 1º...</msg>
+<var>${r}</var>
+<arg>${turno}[pergunta]</arg>
+<arg>${conversa}</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:34:05.062163" elapsed="6.563024"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-29T19:34:11.627188" level="INFO">${conversa} = e2a44e6e-c382-4734-a771-d98a90a573a6</msg>
+<var>${conversa}</var>
+<arg>${r}[conversation_id]</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-29T19:34:11.626191" elapsed="0.000997"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${turno}</arg>
+<arg>${r}[resposta]</arg>
+<arg>pular_sem_criterios=${False}</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:34:11.627188" elapsed="0.000993"/>
+</kw>
+<var name="${turno}">{'pergunta': 'Quanto tempo dura a apresentação oral na defesa de mestrado?', 'termos_obrigatorios': ['30', '40']}</var>
+<status status="PASS" start="2026-10-29T19:34:05.062163" elapsed="6.566018"/>
+</iter>
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:34:18.591033" level="INFO">Pergunta: E no doutorado?
+Resposta (2.961 s): Com base no documento disponibilizado, não há informações sobre o tempo de duração da apresentação oral na defesa de doutorado. Portanto, não é possível responder a esta pergunta com base na base de conhecimento fornecida.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:34:18.591033" level="INFO">${r} = {'caso_id': 'CT30', 'rodada': 1, 'timestamp': '2026-10-29T22:34:18.590529+00:00', 'pergunta': 'E no doutorado?', 'resposta': 'Com base no documento disponibilizado, não há informações sobre o tempo de...</msg>
+<var>${r}</var>
+<arg>${turno}[pergunta]</arg>
+<arg>${conversa}</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:34:11.628181" elapsed="6.962852"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-29T19:34:18.592037" level="INFO">${conversa} = e2a44e6e-c382-4734-a771-d98a90a573a6</msg>
+<var>${conversa}</var>
+<arg>${r}[conversation_id]</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-29T19:34:18.592037" elapsed="0.000000"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:34:18.592551" level="FAIL">termo obrigatório ausente: 40; termo obrigatório ausente: 50</msg>
+<arg>${turno}</arg>
+<arg>${r}[resposta]</arg>
+<arg>pular_sem_criterios=${False}</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="FAIL" start="2026-10-29T19:34:18.592037" elapsed="0.000514">termo obrigatório ausente: 40; termo obrigatório ausente: 50</status>
+</kw>
+<var name="${turno}">{'pergunta': 'E no doutorado?', 'termos_obrigatorios': ['40', '50']}</var>
+<status status="FAIL" start="2026-10-29T19:34:11.628181" elapsed="6.964370">termo obrigatório ausente: 40; termo obrigatório ausente: 50</status>
+</iter>
+<var>${turno}</var>
+<value>@{caso}[turnos]</value>
+<status status="FAIL" start="2026-10-29T19:34:05.061160" elapsed="13.531391">termo obrigatório ausente: 40; termo obrigatório ausente: 50</status>
+</for>
+<arg>CT30</arg>
+<doc>Envia os turnos do caso na mesma conversa, validando cada resposta.</doc>
+<status status="FAIL" start="2026-10-29T19:34:05.061160" elapsed="13.531391">termo obrigatório ausente: 40; termo obrigatório ausente: 50</status>
+</kw>
+<tag>conversa</tag>
+<status status="FAIL" start="2026-10-29T19:34:05.060626" elapsed="13.532935">termo obrigatório ausente: 40; termo obrigatório ausente: 50</status>
+</test>
+<doc>Contexto conversacional: perguntas dependentes de turnos anteriores (mesmo conversation_id).</doc>
+<status status="FAIL" start="2026-10-29T19:33:14.550085" elapsed="64.043476"/>
+</suite>
+<statistics>
+<total>
+<stat pass="3" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="3" fail="1" skip="0">conversa</stat>
+</tag>
+<suite>
+<stat name="conversa" id="s1" pass="3" fail="1" skip="0">conversa</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

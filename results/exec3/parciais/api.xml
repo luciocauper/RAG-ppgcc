@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.5 (Python 3.11.9 on win32)" generated="2026-10-29T19:58:42.142526" rpa="false" schemaversion="5">
+<suite id="s1" name="api" source="C:\Users\lucio\Documents\UECE\workspace\pratica-inteligente\tests\api.robot">
+<test id="s1-t1" name="API Disponivel Com Chave Valida" line="8">
+<kw name="Verificar Disponibilidade Da API" owner="dify_client">
+<doc>Falha se a API do Dify estiver inacessível ou a chave for inválida.</doc>
+<status status="PASS" start="2026-10-29T19:58:42.242499" elapsed="0.020034"/>
+</kw>
+<tag>api</tag>
+<status status="PASS" start="2026-10-29T19:58:42.241419" elapsed="0.021114"/>
+</test>
+<test id="s1-t2" name="Resposta Contem Texto E Identificador De Conversa" line="11">
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:58:48.058848" level="INFO">Pergunta: Olá, sobre o que você pode responder?
+Resposta (1.795 s): Olá! Eu posso responder a dúvidas referentes exclusivamente ao Regimento do Programa de Pós-Graduação em Ciência da Computação (PPGCC), tais como:
+
+- Atribuições de órgãos e comissões (como a Comissão de Pós-Graduação e a Comissão de Bolsas);
+- Processos de seleção, editais e vagas (incluindo competências da Comissão e do Colegiado);
+- Requisitos de admissão de candidatos no PPGCC;
+- Disposições gerais e vigência do regimento, além da resolução de casos omissos.
+
+Caso tenha alguma dúvida específica sobre esses tópicos com base no documento oficial, estou à disposição para ajudar!
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:58:48.058848" level="INFO">${r} = {'caso_id': 'API01', 'rodada': 1, 'timestamp': '2026-10-29T22:58:48.057274+00:00', 'pergunta': 'Olá, sobre o que você pode responder?', 'resposta': 'Olá! Eu posso responder a dúvidas referentes exclus...</msg>
+<var>${r}</var>
+<arg>Olá, sobre o que você pode responder?</arg>
+<arg>caso_id=API01</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:58:42.262533" elapsed="5.796315"/>
+</kw>
+<kw name="Should Not Be Empty" owner="BuiltIn">
+<msg time="2026-10-29T19:58:48.059855" level="INFO">Length is 586.</msg>
+<arg>${r}[resposta]</arg>
+<doc>Verifies that the given item is not empty.</doc>
+<status status="PASS" start="2026-10-29T19:58:48.059855" elapsed="0.000000"/>
+</kw>
+<kw name="Should Not Be Empty" owner="BuiltIn">
+<msg time="2026-10-29T19:58:48.059855" level="INFO">Length is 36.</msg>
+<arg>${r}[conversation_id]</arg>
+<doc>Verifies that the given item is not empty.</doc>
+<status status="PASS" start="2026-10-29T19:58:48.059855" elapsed="0.000000"/>
+</kw>
+<tag>api</tag>
+<status status="PASS" start="2026-10-29T19:58:42.262533" elapsed="5.797322"/>
+</test>
+<test id="s1-t3" name="Resposta Traz Trechos Recuperados Da Base" line="16">
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:58:53.547952" level="INFO">Pergunta: Qual é a nota mínima para aprovação em uma disciplina?
+Resposta (1.486 s): De acordo com o Artigo 37 do regimento, para ser considerado aprovado em uma disciplina, o aluno deve obter um conceito numérico igual ou superior a 7,0 (sete), em uma escala de 0,0 (zero) a 10,0 (dez).
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:58:53.547952" level="INFO">${r} = {'caso_id': 'API02', 'rodada': 1, 'timestamp': '2026-10-29T22:58:53.546941+00:00', 'pergunta': 'Qual é a nota mínima para aprovação em uma disciplina?', 'resposta': 'De acordo com o Artigo 37 do regim...</msg>
+<var>${r}</var>
+<arg>Qual é a nota mínima para aprovação em uma disciplina?</arg>
+<arg>caso_id=API02</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:58:48.059855" elapsed="5.488097"/>
+</kw>
+<kw name="Should Not Be Empty" owner="BuiltIn">
+<msg time="2026-10-29T19:58:53.548941" level="INFO">Length is 3.</msg>
+<arg>${r}[contextos]</arg>
+<doc>Verifies that the given item is not empty.</doc>
+<status status="PASS" start="2026-10-29T19:58:53.548941" elapsed="0.000000"/>
+</kw>
+<doc>Exige "Citations and Attributions" habilitado no app; sem isso o Ragas não recebe contextos.</doc>
+<tag>api</tag>
+<status status="PASS" start="2026-10-29T19:58:48.059855" elapsed="5.489086"/>
+</test>
+<test id="s1-t4" name="Chave Invalida E Rejeitada" line="21">
+<kw name="Obter Status Da Requisicao" owner="dify_client">
+<msg time="2026-10-29T19:58:53.557093" level="INFO">HTTP 401: {"code":"unauthorized","message":"Access token is invalid","status":401}</msg>
+<msg time="2026-10-29T19:58:53.557606" level="INFO">${status} = 401</msg>
+<var>${status}</var>
+<arg>teste</arg>
+<arg>api_key=app-chave-invalida</arg>
+<doc>Envia uma pergunta sem exigir sucesso e retorna apenas o status HTTP.</doc>
+<status status="PASS" start="2026-10-29T19:58:53.548941" elapsed="0.008665"/>
+</kw>
+<kw name="Should Be Equal As Integers" owner="BuiltIn">
+<msg time="2026-10-29T19:58:53.557606" level="INFO">Argument types are:
+&lt;class 'int'&gt;
+&lt;class 'str'&gt;</msg>
+<arg>${status}</arg>
+<arg>401</arg>
+<doc>Fails if objects are unequal after converting them to integers.</doc>
+<status status="PASS" start="2026-10-29T19:58:53.557606" elapsed="0.000000"/>
+</kw>
+<tag>api</tag>
+<status status="PASS" start="2026-10-29T19:58:53.548941" elapsed="0.008665"/>
+</test>
+<doc>Verificações básicas da API do Dify (pré-condição das demais suítes).</doc>
+<status status="PASS" start="2026-10-29T19:58:42.143528" elapsed="11.414078"/>
+</suite>
+<statistics>
+<total>
+<stat pass="4" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="4" fail="0" skip="0">api</stat>
+</tag>
+<suite>
+<stat name="api" id="s1" pass="4" fail="0" skip="0">api</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

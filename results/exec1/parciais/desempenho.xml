@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.5 (Python 3.11.9 on win32)" generated="2026-10-29T19:34:25.463173" rpa="false" schemaversion="5">
+<suite id="s1" name="desempenho" source="C:\Users\lucio\Documents\UECE\workspace\pratica-inteligente\tests\desempenho.robot">
+<kw name="Verificar Disponibilidade Da API" owner="dify_client" type="SETUP">
+<doc>Falha se a API do Dify estiver inacessível ou a chave for inválida.</doc>
+<status status="PASS" start="2026-10-29T19:34:25.582779" elapsed="0.026237"/>
+</kw>
+<test id="s1-t1" name="CT17 Latencia dentro do limite" line="9">
+<kw name="Repetir Pergunta Do Caso" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:34:25.611025" level="INFO">${caso} = {'id': 'CT17', 'categoria': 'desempenho', 'subcategoria': 'latencia', 'pergunta': 'Qual é a nota mínima para aprovação em uma disciplina?', 'comportamento_esperado': 'Todas as repetições abaixo do lim...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:34:25.610519" elapsed="0.000506"/>
+</kw>
+<kw name="Create List" owner="BuiltIn">
+<msg time="2026-10-29T19:34:25.611025" level="INFO">${resultados} = []</msg>
+<var>${resultados}</var>
+<doc>Creates and returns a list containing the given items.</doc>
+<status status="PASS" start="2026-10-29T19:34:25.611025" elapsed="0.000000"/>
+</kw>
+<for flavor="IN RANGE">
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:34:32.075008" level="INFO">Pergunta: Qual é a nota mínima para aprovação em uma disciplina?
+Resposta (2.462 s): De acordo com o Artigo 37 do regimento, a nota mínima para aprovação em uma disciplina é um conceito igual ou superior a 7,0 (sete), em uma escala de 0,0 (zero) a 10,0 (dez).
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:34:32.076010" level="INFO">${r} = {'caso_id': 'CT17', 'rodada': 1, 'timestamp': '2026-10-29T22:34:32.074019+00:00', 'pergunta': 'Qual é a nota mínima para aprovação em uma disciplina?', 'resposta': 'De acordo com o Artigo 37 do regime...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<arg>rodada=${i}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:34:25.611025" elapsed="6.464985"/>
+</kw>
+<kw name="Append To List" owner="Collections">
+<arg>${resultados}</arg>
+<arg>${r}</arg>
+<doc>Adds `values` to the end of `list`.</doc>
+<status status="PASS" start="2026-10-29T19:34:32.077018" elapsed="0.000000"/>
+</kw>
+<var name="${i}">1</var>
+<status status="PASS" start="2026-10-29T19:34:25.611025" elapsed="6.466984"/>
+</iter>
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:34:37.348347" level="INFO">Pergunta: Qual é a nota mínima para aprovação em uma disciplina?
+Resposta (1.268 s): De acordo com o Artigo 37 do regimento, a nota (conceito numérico) mínima para aprovação em uma disciplina é igual ou superior a 7,0 (sete), em uma escala de 0,0 a 10,0.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:34:37.348347" level="INFO">${r} = {'caso_id': 'CT17', 'rodada': 2, 'timestamp': '2026-10-29T22:34:37.347336+00:00', 'pergunta': 'Qual é a nota mínima para aprovação em uma disciplina?', 'resposta': 'De acordo com o Artigo 37 do regime...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<arg>rodada=${i}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:34:32.078009" elapsed="5.270338"/>
+</kw>
+<kw name="Append To List" owner="Collections">
+<arg>${resultados}</arg>
+<arg>${r}</arg>
+<doc>Adds `values` to the end of `list`.</doc>
+<status status="PASS" start="2026-10-29T19:34:37.348347" elapsed="0.001505"/>
+</kw>
+<var name="${i}">2</var>
+<status status="PASS" start="2026-10-29T19:34:32.078009" elapsed="5.271843"/>
+</iter>
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:34:42.715833" level="INFO">Pergunta: Qual é a nota mínima para aprovação em uma disciplina?
+Resposta (1.365 s): De acordo com o Artigo 37 do regimento, o aluno será considerado aprovado se obtiver um conceito igual ou superior a 7,0 (sete), em uma escala numérica de 0,0 (zero) a 10,0 (dez).
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:34:42.715833" level="INFO">${r} = {'caso_id': 'CT17', 'rodada': 3, 'timestamp': '2026-10-29T22:34:42.715328+00:00', 'pergunta': 'Qual é a nota mínima para aprovação em uma disciplina?', 'resposta': 'De acordo com o Artigo 37 do regime...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<arg>rodada=${i}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:34:37.349852" elapsed="5.365981"/>
+</kw>
+<kw name="Append To List" owner="Collections">
+<arg>${resultados}</arg>
+<arg>${r}</arg>
+<doc>Adds `values` to the end of `list`.</doc>
+<status status="PASS" start="2026-10-29T19:34:42.716840" elapsed="0.000000"/>
+</kw>
+<var name="${i}">3</var>
+<status status="PASS" start="2026-10-29T19:34:37.349852" elapsed="5.366988"/>
+</iter>
+<var>${i}</var>
+<value>1</value>
+<value>${repeticoes} + 1</value>
+<status status="PASS" start="2026-10-29T19:34:25.611025" elapsed="17.105815"/>
+</for>
+<return>
+<value>${resultados}</value>
+<status status="PASS" start="2026-10-29T19:34:42.716840" elapsed="0.000000"/>
+</return>
+<msg time="2026-10-29T19:34:42.716840" level="INFO">${resultados} = [{'caso_id': 'CT17', 'rodada': 1, 'timestamp': '2026-10-29T22:34:32.074019+00:00', 'pergunta': 'Qual é a nota mínima para aprovação em uma disciplina?', 'resposta': 'De acordo com o Artigo 37 do regim...</msg>
+<var>${resultados}</var>
+<arg>CT17</arg>
+<arg>%{REPETICOES_CONSISTENCIA=3}</arg>
+<doc>Envia a pergunta do caso N vezes, cada uma em conversa nova, e retorna os resultados.</doc>
+<status status="PASS" start="2026-10-29T19:34:25.610519" elapsed="17.106321"/>
+</kw>
+<kw name="Validar Latencia" owner="rag_evaluator">
+<msg time="2026-10-29T19:34:42.716840" level="INFO">Latências (s): [2.462, 1.268, 1.365] | média 1.70 | máx 2.46</msg>
+<arg>${resultados}</arg>
+<arg>%{LIMITE_LATENCIA_S=30}</arg>
+<status status="PASS" start="2026-10-29T19:34:42.716840" elapsed="0.000000"/>
+</kw>
+<tag>desempenho</tag>
+<status status="PASS" start="2026-10-29T19:34:25.610013" elapsed="17.107832"/>
+</test>
+<test id="s1-t2" name="CT18 Consistencia entre repeticoes" line="13">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:34:42.717845" level="INFO">${caso} = {'id': 'CT18', 'categoria': 'desempenho', 'subcategoria': 'consistencia', 'pergunta': 'Quantos orientandos um professor pode ter simultaneamente?', 'referencia_regimento': 'Art. 29', 'comportamento_es...</msg>
+<var>${caso}</var>
+<arg>CT18</arg>
+<status status="PASS" start="2026-10-29T19:34:42.717845" elapsed="0.000000"/>
+</kw>
+<kw name="Repetir Pergunta Do Caso" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:34:42.718845" level="INFO">${caso} = {'id': 'CT18', 'categoria': 'desempenho', 'subcategoria': 'consistencia', 'pergunta': 'Quantos orientandos um professor pode ter simultaneamente?', 'referencia_regimento': 'Art. 29', 'comportamento_es...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:34:42.718845" elapsed="0.000000"/>
+</kw>
+<kw name="Create List" owner="BuiltIn">
+<msg time="2026-10-29T19:34:42.718845" level="INFO">${resultados} = []</msg>
+<var>${resultados}</var>
+<doc>Creates and returns a list containing the given items.</doc>
+<status status="PASS" start="2026-10-29T19:34:42.718845" elapsed="0.000000"/>
+</kw>
+<for flavor="IN RANGE">
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:34:47.895282" level="INFO">Pergunta: Quantos orientandos um professor pode ter simultaneamente?
+Resposta (1.175 s): De acordo com o Art. 29º do regimento, cada orientador do PPGCC poderá ter até 8 (oito) orientandos simultaneamente. 
+
+Além disso, o Parágrafo único do mesmo artigo estabelece que, considerando o histórico de produção de pós-graduados e o tempo médio de titulação dos alunos formados, a Comissão poderá autorizar um aumento desse limite individualmente, desde que seja garantida a qualidade da formação dos alunos.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:34:47.896282" level="INFO">${r} = {'caso_id': 'CT18', 'rodada': 1, 'timestamp': '2026-10-29T22:34:47.895282+00:00', 'pergunta': 'Quantos orientandos um professor pode ter simultaneamente?', 'resposta': 'De acordo com o Art. 29º do reg...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<arg>rodada=${i}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:34:42.718845" elapsed="5.177437"/>
+</kw>
+<kw name="Append To List" owner="Collections">
+<arg>${resultados}</arg>
+<arg>${r}</arg>
+<doc>Adds `values` to the end of `list`.</doc>
+<status status="PASS" start="2026-10-29T19:34:47.896282" elapsed="0.001018"/>
+</kw>
+<var name="${i}">1</var>
+<status status="PASS" start="2026-10-29T19:34:42.718845" elapsed="5.178455"/>
+</iter>
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:34:53.295064" level="INFO">Pergunta: Quantos orientandos um professor pode ter simultaneamente?
+Resposta (1.396 s): De acordo com o Art. 29 do regimento, cada orientador do PPGCC poderá ter até 8 (oito) orientandos simultaneamente. 
+
+O parágrafo único do mesmo artigo estabelece que a Comissão poderá autorizar um aumento deste limite, individualmente, considerando o histórico de produção de pós-graduados do orientador, o tempo médio de titulação de seus alunos formados e a garantia de qualidade da formação dos alunos.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:34:53.295064" level="INFO">${r} = {'caso_id': 'CT18', 'rodada': 2, 'timestamp': '2026-10-29T22:34:53.293981+00:00', 'pergunta': 'Quantos orientandos um professor pode ter simultaneamente?', 'resposta': 'De acordo com o Art. 29 do regi...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<arg>rodada=${i}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:34:47.897300" elapsed="5.397764"/>
+</kw>
+<kw name="Append To List" owner="Collections">
+<arg>${resultados}</arg>
+<arg>${r}</arg>
+<doc>Adds `values` to the end of `list`.</doc>
+<status status="PASS" start="2026-10-29T19:34:53.295982" elapsed="0.000000"/>
+</kw>
+<var name="${i}">2</var>
+<status status="PASS" start="2026-10-29T19:34:47.897300" elapsed="5.398682"/>
+</iter>
+<iter>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:34:58.573541" level="INFO">Pergunta: Quantos orientandos um professor pode ter simultaneamente?
+Resposta (1.276 s): De acordo com o Art. 29 do regimento, cada orientador do PPGCC poderá ter até 8 (oito) orientandos simultaneamente. 
+
+O parágrafo único do mesmo artigo estabelece que, considerando o histórico de produção de pós-graduados e o tempo médio de titulação dos alunos formados, a Comissão poderá autorizar um aumento desse limite individualmente, sempre visando garantir a qualidade da formação dos alunos.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:34:58.574543" level="INFO">${r} = {'caso_id': 'CT18', 'rodada': 3, 'timestamp': '2026-10-29T22:34:58.572531+00:00', 'pergunta': 'Quantos orientandos um professor pode ter simultaneamente?', 'resposta': 'De acordo com o Art. 29 do regi...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<arg>rodada=${i}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:34:53.295982" elapsed="5.278561"/>
+</kw>
+<kw name="Append To List" owner="Collections">
+<arg>${resultados}</arg>
+<arg>${r}</arg>
+<doc>Adds `values` to the end of `list`.</doc>
+<status status="PASS" start="2026-10-29T19:34:58.574543" elapsed="0.000000"/>
+</kw>
+<var name="${i}">3</var>
+<status status="PASS" start="2026-10-29T19:34:53.295982" elapsed="5.278561"/>
+</iter>
+<var>${i}</var>
+<value>1</value>
+<value>${repeticoes} + 1</value>
+<status status="PASS" start="2026-10-29T19:34:42.718845" elapsed="15.855698"/>
+</for>
+<return>
+<value>${resultados}</value>
+<status status="PASS" start="2026-10-29T19:34:58.574543" elapsed="0.000000"/>
+</return>
+<msg time="2026-10-29T19:34:58.575545" level="INFO">${resultados} = [{'caso_id': 'CT18', 'rodada': 1, 'timestamp': '2026-10-29T22:34:47.895282+00:00', 'pergunta': 'Quantos orientandos um professor pode ter simultaneamente?', 'resposta': 'De acordo com o Art. 29º do re...</msg>
+<var>${resultados}</var>
+<arg>CT18</arg>
+<arg>%{REPETICOES_CONSISTENCIA=3}</arg>
+<doc>Envia a pergunta do caso N vezes, cada uma em conversa nova, e retorna os resultados.</doc>
+<status status="PASS" start="2026-10-29T19:34:42.717845" elapsed="15.857700"/>
+</kw>
+<for flavor="IN">
+<iter>
+<kw name="Run Keyword And Continue On Failure" owner="BuiltIn">
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:34:58.576553" elapsed="0.001506"/>
+</kw>
+<arg>Validar Caso</arg>
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Runs the keyword and continues execution even if a failure occurs.</doc>
+<status status="PASS" start="2026-10-29T19:34:58.576553" elapsed="0.001506"/>
+</kw>
+<var name="${r}">{'caso_id': 'CT18', 'rodada': 1, 'timestamp': '2026-10-29T22:34:47.895282+00:00', 'pergunta': 'Quantos orientandos um professor pode ter simultaneamente?', 'resposta': 'De acordo com o Art. 29º do reg...</var>
+<status status="PASS" start="2026-10-29T19:34:58.575545" elapsed="0.002514"/>
+</iter>
+<iter>
+<kw name="Run Keyword And Continue On Failure" owner="BuiltIn">
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:34:58.578059" elapsed="0.001006"/>
+</kw>
+<arg>Validar Caso</arg>
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Runs the keyword and continues execution even if a failure occurs.</doc>
+<status status="PASS" start="2026-10-29T19:34:58.578059" elapsed="0.001006"/>
+</kw>
+<var name="${r}">{'caso_id': 'CT18', 'rodada': 2, 'timestamp': '2026-10-29T22:34:53.293981+00:00', 'pergunta': 'Quantos orientandos um professor pode ter simultaneamente?', 'resposta': 'De acordo com o Art. 29 do regi...</var>
+<status status="PASS" start="2026-10-29T19:34:58.578059" elapsed="0.001006"/>
+</iter>
+<iter>
+<kw name="Run Keyword And Continue On Failure" owner="BuiltIn">
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:34:58.579065" elapsed="0.000000"/>
+</kw>
+<arg>Validar Caso</arg>
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Runs the keyword and continues execution even if a failure occurs.</doc>
+<status status="PASS" start="2026-10-29T19:34:58.579065" elapsed="0.000000"/>
+</kw>
+<var name="${r}">{'caso_id': 'CT18', 'rodada': 3, 'timestamp': '2026-10-29T22:34:58.572531+00:00', 'pergunta': 'Quantos orientandos um professor pode ter simultaneamente?', 'resposta': 'De acordo com o Art. 29 do regi...</var>
+<status status="PASS" start="2026-10-29T19:34:58.579065" elapsed="0.000000"/>
+</iter>
+<var>${r}</var>
+<value>@{resultados}</value>
+<status status="PASS" start="2026-10-29T19:34:58.575545" elapsed="0.003520"/>
+</for>
+<kw name="Validar Consistencia" owner="rag_evaluator">
+<msg time="2026-10-29T19:34:58.581084" level="INFO">Similaridade média entre 3 respostas: 0.422</msg>
+<msg time="2026-10-29T19:34:58.581084" level="FAIL">Similaridade média 0.422 abaixo do mínimo 0.5</msg>
+<arg>${resultados}</arg>
+<arg>%{LIMITE_SIMILARIDADE_CONSISTENCIA=0.5}</arg>
+<doc>Similaridade lexical média entre pares de respostas à mesma pergunta.</doc>
+<status status="FAIL" start="2026-10-29T19:34:58.579065" elapsed="0.003024">Similaridade média 0.422 abaixo do mínimo 0.5</status>
+</kw>
+<tag>desempenho</tag>
+<status status="FAIL" start="2026-10-29T19:34:42.717845" elapsed="15.864244">Similaridade média 0.422 abaixo do mínimo 0.5</status>
+</test>
+<test id="s1-t3" name="CT19 Entrada extensa tratada sem erro de servidor" line="21">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:34:58.583099" level="INFO">${caso} = {'id': 'CT19', 'categoria': 'desempenho', 'subcategoria': 'entrada_extensa', 'pergunta': 'Qual é a nota mínima para aprovação em uma disciplina?', 'repeticoes_preenchimento': 1500, 'comportamento_espe...</msg>
+<var>${caso}</var>
+<arg>CT19</arg>
+<status status="PASS" start="2026-10-29T19:34:58.583099" elapsed="0.000000"/>
+</kw>
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-10-29T19:34:58.584093" level="INFO">${preenchimento} = Considere o regimento do programa. Considere o regimento do programa. Considere o regimento do programa. Considere o regimento do programa. Considere o regimento do programa. Considere o regimento do ...</msg>
+<var>${preenchimento}</var>
+<arg>"Considere o regimento do programa. " * ${caso}[repeticoes_preenchimento]</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-10-29T19:34:58.583099" elapsed="0.000994"/>
+</kw>
+<kw name="Obter Status Da Requisicao" owner="dify_client">
+<msg time="2026-10-29T19:35:47.541024" level="INFO">HTTP 200: {"event": "message", "task_id": "67dae021-66f8-4cf3-bdd0-fdb03a0b6df9", "id": "84f0d0b1-a1d9-4b74-954c-24f0f8634056", "message_id": "84f0d0b1-a1d9-4b74-954c-24f0f8634056", "conversation_id": "14995d32-23f8-4672-b7fd-56658493dbe5", "mode": "chat", "answer": "De acordo com o Regimento do Programa, o a</msg>
+<msg time="2026-10-29T19:35:47.542034" level="INFO">${status} = 200</msg>
+<var>${status}</var>
+<arg>${preenchimento}${caso}[pergunta]</arg>
+<doc>Envia uma pergunta sem exigir sucesso e retorna apenas o status HTTP.</doc>
+<status status="PASS" start="2026-10-29T19:34:58.584093" elapsed="48.957941"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${status} &lt; 500</arg>
+<arg>Servidor retornou erro ${status} para entrada extensa</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="PASS" start="2026-10-29T19:35:47.542034" elapsed="0.000000"/>
+</kw>
+<tag>desempenho</tag>
+<status status="PASS" start="2026-10-29T19:34:58.583099" elapsed="48.958935"/>
+</test>
+<doc>Desempenho e estabilidade: latência, variabilidade entre repetições e entradas extensas.</doc>
+<status status="FAIL" start="2026-10-29T19:34:25.464680" elapsed="82.078369"/>
+</suite>
+<statistics>
+<total>
+<stat pass="2" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="2" fail="1" skip="0">desempenho</stat>
+</tag>
+<suite>
+<stat name="desempenho" id="s1" pass="2" fail="1" skip="0">desempenho</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

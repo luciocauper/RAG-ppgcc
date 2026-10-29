@@ -1,0 +1,9 @@
+# Automação dos testes
+robotframework>=7.0
+requests>=2.31
+python-dotenv>=1.0
+
+# Avaliação semântica (executada após a suíte Robot, sobre results/respostas.jsonl)
+ragas>=0.2,<0.3
+langchain-openai>=0.2
+pandas>=2.0

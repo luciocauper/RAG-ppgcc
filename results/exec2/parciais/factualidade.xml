@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.5 (Python 3.11.9 on win32)" generated="2026-10-29T19:53:52.496584" rpa="false" schemaversion="5">
+<suite id="s1" name="factualidade" source="C:\Users\lucio\Documents\UECE\workspace\pratica-inteligente\tests\factualidade.robot">
+<kw name="Verificar Disponibilidade Da API" owner="dify_client" type="SETUP">
+<doc>Falha se a API do Dify estiver inacessível ou a chave for inválida.</doc>
+<status status="PASS" start="2026-10-29T19:53:52.593505" elapsed="0.017534"/>
+</kw>
+<test id="s1-t1" name="CT01 Nota minima para aprovacao" line="10">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:53:52.612048" level="INFO">${caso} = {'id': 'CT01', 'categoria': 'factual', 'pergunta': 'Qual é a nota mínima para aprovação em uma disciplina?', 'resposta_referencia': 'O professor atribui um conceito numérico de 0,0 a 10,0, sendo aprov...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:53:52.612048" elapsed="0.000000"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:53:58.120648" level="INFO">Pergunta: Qual é a nota mínima para aprovação em uma disciplina?
+Resposta (1.507 s): Com base no regimento, a nota mínima (conceito) para a aprovação de um aluno em uma disciplina é 7,0 (sete), sendo atribuído um conceito numérico de 0,0 a 10,0.
+
+Essa determinação está fundamentada no **Artigo 37**.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:53:58.120648" level="INFO">${r} = {'caso_id': 'CT01', 'rodada': 1, 'timestamp': '2026-10-29T22:53:58.119079+00:00', 'pergunta': 'Qual é a nota mínima para aprovação em uma disciplina?', 'resposta': 'Com base no regimento, a nota mínim...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:53:52.612048" elapsed="5.508600"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:53:58.120648" elapsed="0.001451"/>
+</kw>
+<arg>CT01</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:53:52.611039" elapsed="5.511060"/>
+</kw>
+<tag>factual</tag>
+<status status="PASS" start="2026-10-29T19:53:52.611039" elapsed="5.511060"/>
+</test>
+<test id="s1-t2" name="CT02 Frequencia minima" line="11">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:53:58.122694" level="INFO">${caso} = {'id': 'CT02', 'categoria': 'factual', 'pergunta': 'Qual é a frequência mínima exigida nas disciplinas?', 'resposta_referencia': 'A frequência é obrigatória e não pode ser inferior a 75% da carga horá...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:53:58.122694" elapsed="0.000000"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:54:05.569600" level="INFO">Pergunta: Qual é a frequência mínima exigida nas disciplinas?
+Resposta (3.445 s): Com base no documento, a frequência nas disciplinas é obrigatória e não poderá ser inferior a 75% (setenta e cinco por cento) da carga horária programada, por disciplina ou atividade.
+
+**Fundamentação:** Artigo 36.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:54:05.569600" level="INFO">${r} = {'caso_id': 'CT02', 'rodada': 1, 'timestamp': '2026-10-29T22:54:05.568376+00:00', 'pergunta': 'Qual é a frequência mínima exigida nas disciplinas?', 'resposta': 'Com base no documento, a frequência na...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:53:58.122694" elapsed="7.446906"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:54:05.569600" elapsed="0.000000"/>
+</kw>
+<arg>CT02</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:53:58.122694" elapsed="7.447913"/>
+</kw>
+<tag>factual</tag>
+<status status="PASS" start="2026-10-29T19:53:58.122099" elapsed="7.448508"/>
+</test>
+<test id="s1-t3" name="CT03 Creditos exigidos no doutorado" line="12">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:54:05.570607" level="INFO">${caso} = {'id': 'CT03', 'categoria': 'factual', 'pergunta': 'Quantos créditos em disciplinas são exigidos no doutorado?', 'resposta_referencia': 'No doutorado são exigidos no mínimo 48 créditos em disciplinas ...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:54:05.570607" elapsed="0.000000"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:54:15.212310" level="INFO">Pergunta: Quantos créditos em disciplinas são exigidos no doutorado?
+Resposta (5.64 s): De acordo com o Artigo 31º, alínea "b", para o Doutorado são exigidos um mínimo de **48 (quarenta e oito) créditos em disciplinas** e 04 (quatro) créditos em Estágio à Docência. 
+
+Além disso, o Artigo 32º, inciso "ii", detalha que a composição desses créditos em disciplinas deve seguir a seguinte distribuição:
+* **08 (oito)** créditos em disciplinas do núcleo comum;
+* **40 (quarenta)** créditos em disciplinas específicas das linhas de pesquisa.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:54:15.212310" level="INFO">${r} = {'caso_id': 'CT03', 'rodada': 1, 'timestamp': '2026-10-29T22:54:15.211292+00:00', 'pergunta': 'Quantos créditos em disciplinas são exigidos no doutorado?', 'resposta': 'De acordo com o Artigo 31º, alí...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:54:05.570607" elapsed="9.641703"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:54:15.213297" elapsed="0.000000"/>
+</kw>
+<arg>CT03</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:54:05.570607" elapsed="9.642690"/>
+</kw>
+<tag>factual</tag>
+<status status="PASS" start="2026-10-29T19:54:05.570607" elapsed="9.642690"/>
+</test>
+<test id="s1-t4" name="CT04 Limite de orientandos por professor" line="13">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:54:15.214310" level="INFO">${caso} = {'id': 'CT04', 'categoria': 'factual', 'pergunta': 'Quantos orientandos um professor pode ter simultaneamente?', 'resposta_referencia': 'Cada orientador pode ter até 8 orientandos simultaneamente. A C...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:54:15.213297" elapsed="0.001013"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:54:21.988545" level="INFO">Pergunta: Quantos orientandos um professor pode ter simultaneamente?
+Resposta (2.773 s): De acordo com o Artigo 29 do regimento, cada orientador do PPGCC poderá ter até 8 (oito) orientandos simultaneamente. 
+
+Além disso, o parágrafo único do mesmo artigo estabelece que a Comissão poderá autorizar um aumento desse limite individualmente, levando em conta o histórico de produção de pós-graduados do orientador, o tempo médio de titulação de seus alunos formados e a garantia de qualidade da formação dos alunos.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:54:21.988545" level="INFO">${r} = {'caso_id': 'CT04', 'rodada': 1, 'timestamp': '2026-10-29T22:54:21.987764+00:00', 'pergunta': 'Quantos orientandos um professor pode ter simultaneamente?', 'resposta': 'De acordo com o Artigo 29 do re...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:54:15.214310" elapsed="6.774235"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:54:21.988545" elapsed="0.000000"/>
+</kw>
+<arg>CT04</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:54:15.213297" elapsed="6.775248"/>
+</kw>
+<tag>factual</tag>
+<status status="PASS" start="2026-10-29T19:54:15.213297" elapsed="6.775248"/>
+</test>
+<test id="s1-t5" name="CT05 Trancamento no primeiro semestre" line="14">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:54:21.990772" level="INFO">${caso} = {'id': 'CT05', 'categoria': 'factual', 'pergunta': 'O aluno pode trancar a matrícula no primeiro semestre?', 'resposta_referencia': 'Não. O trancamento de matrícula não é permitido no primeiro período...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:54:21.989773" elapsed="0.000999"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:54:28.549620" level="INFO">Pergunta: O aluno pode trancar a matrícula no primeiro semestre?
+Resposta (2.557 s): De acordo com o § 4º do regimento, **não** é permitido o trancamento no primeiro período letivo de ingresso do aluno no programa.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:54:28.550627" level="INFO">${r} = {'caso_id': 'CT05', 'rodada': 1, 'timestamp': '2026-10-29T22:54:28.547622+00:00', 'pergunta': 'O aluno pode trancar a matrícula no primeiro semestre?', 'resposta': 'De acordo com o § 4º do regimento, ...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:54:21.990772" elapsed="6.559855"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:54:28.551629" elapsed="0.000000"/>
+</kw>
+<arg>CT05</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:54:21.989773" elapsed="6.561856"/>
+</kw>
+<tag>factual</tag>
+<status status="PASS" start="2026-10-29T19:54:21.989773" elapsed="6.562855"/>
+</test>
+<test id="s1-t6" name="CT06 Prorrogacao do doutorado" line="15">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:54:28.554622" level="INFO">${caso} = {'id': 'CT06', 'categoria': 'factual', 'pergunta': 'Qual é o prazo máximo de prorrogação do doutorado?', 'resposta_referencia': 'A prorrogação do doutorado é de até 12 meses, totalizando um máximo de ...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:54:28.553620" elapsed="0.001002"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:54:35.108589" level="INFO">Pergunta: Qual é o prazo máximo de prorrogação do doutorado?
+Resposta (2.552 s): Para o Doutorado, é permitida uma prorrogação de até 12 (doze) meses, totalizando um máximo de 60 (sessenta) meses. Esta prorrogação ocorre mediante requisição formal protocolada pelo aluno, anuência do professor orientador e aprovação da Comissão de Pós-graduação.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:54:35.108589" level="INFO">${r} = {'caso_id': 'CT06', 'rodada': 1, 'timestamp': '2026-10-29T22:54:35.107589+00:00', 'pergunta': 'Qual é o prazo máximo de prorrogação do doutorado?', 'resposta': 'Para o Doutorado, é permitida uma prorr...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:54:28.554622" elapsed="6.553967"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:54:35.108589" elapsed="0.000991"/>
+</kw>
+<arg>CT06</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:54:28.553620" elapsed="6.555960"/>
+</kw>
+<tag>factual</tag>
+<status status="PASS" start="2026-10-29T19:54:28.552628" elapsed="6.556952"/>
+</test>
+<test id="s1-t7" name="CT07 Composicao da banca de doutorado" line="16">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:54:35.111693" level="INFO">${caso} = {'id': 'CT07', 'categoria': 'factual', 'pergunta': 'Quantos integrantes deve ter uma banca de defesa de doutorado?', 'resposta_referencia': 'A banca de Tese de Doutorado deve ter no mínimo 5 membros c...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:54:35.111693" elapsed="0.000000"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:54:42.391081" level="INFO">Pergunta: Quantos integrantes deve ter uma banca de defesa de doutorado?
+Resposta (3.276 s): De acordo com o documento, a banca de Tese de Doutorado deverá ser composta por, no mínimo, 05 (cinco) membros com titulação de doutor. Destes, ao menos 2 (dois) devem ser membros externos à UECE, e a composição deverá ser formada por pelo menos 4 (quatro) membros que não sejam orientador ou co-orientador (conforme o Artigo correspondente, § 2º). 
+
+Além disso, o documento também menciona que a defesa de doutorado deverá ser apresentada diante de uma banca formada por pelo menos 3 (três) professores da área, além do orientador e co-orientador (o que totaliza os mesmos 5 membros mínimos). O orientador do candidato será o presidente da comissão examinadora (§ 3º).
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:54:42.391081" level="INFO">${r} = {'caso_id': 'CT07', 'rodada': 1, 'timestamp': '2026-10-29T22:54:42.389080+00:00', 'pergunta': 'Quantos integrantes deve ter uma banca de defesa de doutorado?', 'resposta': 'De acordo com o documento, ...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:54:35.111693" elapsed="7.279388"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:54:42.391081" elapsed="0.000000"/>
+</kw>
+<arg>CT07</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:54:35.110578" elapsed="7.281505"/>
+</kw>
+<tag>factual</tag>
+<status status="PASS" start="2026-10-29T19:54:35.109580" elapsed="7.282503"/>
+</test>
+<test id="s1-t8" name="CT08 Duracao da apresentacao oral" line="17">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:54:42.393181" level="INFO">${caso} = {'id': 'CT08', 'categoria': 'factual', 'pergunta': 'Qual é a duração da apresentação oral na defesa de doutorado?', 'resposta_referencia': 'O candidato ao título de Doutor deve fazer uma apresentação ...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:54:42.393181" elapsed="0.000000"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:54:51.387249" level="INFO">Pergunta: Qual é a duração da apresentação oral na defesa de doutorado?
+Resposta (4.993 s): De acordo com o Art. 43, § 1º, o candidato ao título de Doutor deverá fazer uma apresentação oral de no mínimo 40 (quarenta) minutos e no máximo 50 (cinquenta) minutos.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:54:51.388246" level="INFO">${r} = {'caso_id': 'CT08', 'rodada': 1, 'timestamp': '2026-10-29T22:54:51.386245+00:00', 'pergunta': 'Qual é a duração da apresentação oral na defesa de doutorado?', 'resposta': 'De acordo com o Art. 43, § 1...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:54:42.393181" elapsed="8.995065"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:54:51.388246" elapsed="0.000000"/>
+</kw>
+<arg>CT08</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:54:42.392083" elapsed="8.996163"/>
+</kw>
+<tag>factual</tag>
+<status status="PASS" start="2026-10-29T19:54:42.392083" elapsed="8.996163"/>
+</test>
+<test id="s1-t9" name="CT09 Contradicao no prazo de qualificacao" line="18">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:54:51.390246" level="INFO">${caso} = {'id': 'CT09', 'categoria': 'factual', 'subcategoria': 'contradicao', 'pergunta': 'Qual é o prazo para realizar e obter aprovação na qualificação de doutorado, segundo o regimento?', 'resposta_referen...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:54:51.390246" elapsed="0.000000"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:55:20.545565" level="INFO">Pergunta: Qual é o prazo para realizar e obter aprovação na qualificação de doutorado, segundo o regimento?
+Resposta (25.153 s): Segundo o regimento, o aluno de Doutorado deverá apresentar a Qualificação de Tese de Doutorado até o 36º (trigésimo sexto) mês do curso (conforme o Art. 35º). Além disso, entre as condições para requisitar o título de doutorado, consta a exigência de ter a Qualificação de Doutorado aprovada dentro do prazo estabelecido (alínea "d" das condições para requisitar o título).
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:55:20.545565" level="INFO">${r} = {'caso_id': 'CT09', 'rodada': 1, 'timestamp': '2026-10-29T22:55:20.544567+00:00', 'pergunta': 'Qual é o prazo para realizar e obter aprovação na qualificação de doutorado, segundo o regimento?', 'resp...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:54:51.390246" elapsed="29.155319"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:55:20.546567" level="FAIL">termo obrigatório ausente: 30</msg>
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="FAIL" start="2026-10-29T19:55:20.545565" elapsed="0.001002">termo obrigatório ausente: 30</status>
+</kw>
+<arg>CT09</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="FAIL" start="2026-10-29T19:54:51.389252" elapsed="29.157315">termo obrigatório ausente: 30</status>
+</kw>
+<tag>contradicao</tag>
+<tag>factual</tag>
+<status status="FAIL" start="2026-10-29T19:54:51.389252" elapsed="29.157315">termo obrigatório ausente: 30</status>
+</test>
+<doc>Correção factual: as respostas devem coincidir com o regimento (inclui caso de contradição).</doc>
+<status status="FAIL" start="2026-10-29T19:53:52.497584" elapsed="88.050392"/>
+</suite>
+<statistics>
+<total>
+<stat pass="8" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="0" fail="1" skip="0">contradicao</stat>
+<stat pass="8" fail="1" skip="0">factual</stat>
+</tag>
+<suite>
+<stat name="factualidade" id="s1" pass="8" fail="1" skip="0">factualidade</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

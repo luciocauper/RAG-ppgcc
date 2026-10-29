@@ -1,0 +1,12 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+
+# Saídas de execução: as execuções oficiais (results/exec1..3) SÃO versionadas, pois são os dados
+# do experimento usados no Ragas e no relatório. Ignorar só arquivos temporários de diagnóstico.
+results/*.jsonl
+results/parciais/
+
+# Clone local do Dify (instalado à parte, ver infra/dify/README.md)
+infra/dify/dify/

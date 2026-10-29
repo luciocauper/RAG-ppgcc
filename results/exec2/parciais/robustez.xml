@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.5 (Python 3.11.9 on win32)" generated="2026-10-29T19:53:01.656081" rpa="false" schemaversion="5">
+<suite id="s1" name="robustez" source="C:\Users\lucio\Documents\UECE\workspace\pratica-inteligente\tests\robustez.robot">
+<kw name="Verificar Disponibilidade Da API" owner="dify_client" type="SETUP">
+<doc>Falha se a API do Dify estiver inacessível ou a chave for inválida.</doc>
+<status status="PASS" start="2026-10-29T19:53:01.766228" elapsed="0.035171"/>
+</kw>
+<test id="s1-t1" name="CT12 Pergunta com erros ortograficos" line="10">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:53:01.802413" level="INFO">${caso} = {'id': 'CT12', 'categoria': 'robustez', 'subcategoria': 'erros_ortograficos', 'pergunta': 'qual a nota minima pra passar numa diciplina no ppgcc', 'resposta_referencia': 'É aprovado na disciplina o al...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:53:01.802413" elapsed="0.000000"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:53:08.620517" level="INFO">Pergunta: qual a nota minima pra passar numa diciplina no ppgcc
+Resposta (2.817 s): De acordo com o Art. 37 do regimento, para ser considerado aprovado em uma disciplina no PPGCC, o aluno deve obter um conceito numérico igual ou superior a 7,0 (sete), em uma escala de 0,0 a 10,0.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:53:08.620517" level="INFO">${r} = {'caso_id': 'CT12', 'rodada': 1, 'timestamp': '2026-10-29T22:53:08.619516+00:00', 'pergunta': 'qual a nota minima pra passar numa diciplina no ppgcc', 'resposta': 'De acordo com o Art. 37 do regimento...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:53:01.803411" elapsed="6.817106"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:53:08.621829" elapsed="0.000000"/>
+</kw>
+<arg>CT12</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:53:01.802413" elapsed="6.819416"/>
+</kw>
+<tag>robustez</tag>
+<status status="PASS" start="2026-10-29T19:53:01.801399" elapsed="6.820430"/>
+</test>
+<test id="s1-t2" name="CT13 Parafrase sobre frequencia" line="11">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:53:08.622833" level="INFO">${caso} = {'id': 'CT13', 'categoria': 'robustez', 'subcategoria': 'parafrase', 'pergunta': 'Se eu faltar a mais de um quarto das aulas de uma disciplina, sou reprovado?', 'resposta_referencia': 'O regimento exi...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:53:08.622833" elapsed="0.000000"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:53:28.488767" level="INFO">Pergunta: Se eu faltar a mais de um quarto das aulas de uma disciplina, sou reprovado?
+Resposta (15.865 s): Sim, você será reprovado por frequência. De acordo com o Artigo 36 do regimento, a frequência nas disciplinas é obrigatória e não poderá ser inferior a 75% (setenta e cinco por cento) da carga horária programada por disciplina ou atividade, o que significa que o limite máximo de faltas permitido é de 25% (um quarto) da carga horária.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:53:28.489850" level="INFO">${r} = {'caso_id': 'CT13', 'rodada': 1, 'timestamp': '2026-10-29T22:53:28.488767+00:00', 'pergunta': 'Se eu faltar a mais de um quarto das aulas de uma disciplina, sou reprovado?', 'resposta': 'Sim, você ser...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:53:08.622833" elapsed="19.867017"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:53:28.489850" elapsed="0.000000"/>
+</kw>
+<arg>CT13</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:53:08.622833" elapsed="19.867017"/>
+</kw>
+<tag>robustez</tag>
+<status status="PASS" start="2026-10-29T19:53:08.621829" elapsed="19.868021"/>
+</test>
+<test id="s1-t3" name="CT23 Divergencia 48 quarenta no documento" line="12">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:53:28.490845" level="INFO">${caso} = {'id': 'CT23', 'categoria': 'robustez', 'subcategoria': 'ruido_no_documento', 'pergunta': 'Pelo regimento, um aluno de doutorado precisa cursar quarenta créditos em disciplinas?', 'resposta_referencia...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:53:28.490845" elapsed="0.000000"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:53:35.323788" level="INFO">Pergunta: Pelo regimento, um aluno de doutorado precisa cursar quarenta créditos em disciplinas?
+Resposta (2.831 s): Sim, de acordo com o Art. 32º, alínea "ii-b", o aluno cursando Doutorado deve montar seu plano de estudo contemplando **40 (quarenta) créditos em disciplinas específicas das linhas de pesquisa**. 
+
+Além disso, o Art. 33º, alínea "b", estabelece que o aluno de doutorado deve cursar um **mínimo de 48 (quarenta e oito) créditos no total em disciplinas**, sendo compostos por 8 créditos no núcleo comum (conforme o Art. 32º, alínea "ii-a") e os 40 créditos específicos mencionados.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:53:35.323788" level="INFO">${r} = {'caso_id': 'CT23', 'rodada': 1, 'timestamp': '2026-10-29T22:53:35.322789+00:00', 'pergunta': 'Pelo regimento, um aluno de doutorado precisa cursar quarenta créditos em disciplinas?', 'resposta': 'Sim...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:53:28.490845" elapsed="6.832943"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:53:35.325338" elapsed="0.000000"/>
+</kw>
+<arg>CT23</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:53:28.490845" elapsed="6.834493"/>
+</kw>
+<tag>contradicao</tag>
+<tag>robustez</tag>
+<status status="PASS" start="2026-10-29T19:53:28.489850" elapsed="6.835488"/>
+</test>
+<test id="s1-t4" name="CT24 Linguagem informal sobre creditos do mestrado" line="14">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:53:35.326411" level="INFO">${caso} = {'id': 'CT24', 'categoria': 'robustez', 'subcategoria': 'linguagem_informal', 'pergunta': 'quantos creditos eu preciso fazer no mestrado??', 'resposta_referencia': 'No mestrado são exigidos no mínimo ...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:53:35.326411" elapsed="0.000000"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:53:42.021748" level="INFO">Pergunta: quantos creditos eu preciso fazer no mestrado??
+Resposta (2.693 s): De acordo com o Artigo 31º, alínea "a", para o curso de **Mestrado**, o aluno deverá cursar um mínimo de:
+
+* **24 (vinte e quatro) créditos** em disciplinas;
+* **02 (dois) créditos** em Estágio à Docência.
+
+Além disso, o plano de estudo para o aluno de Mestrado deve ser composto da seguinte forma (conforme o Artigo 32º, inciso i):
+
+* **04 (quatro) créditos** em disciplinas do núcleo comum;
+* **20 (vinte) créditos** em disciplinas específicas das linhas de pesquisa;
+* **02 (dois) créditos** em Estágio à Docência.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:53:42.022918" level="INFO">${r} = {'caso_id': 'CT24', 'rodada': 1, 'timestamp': '2026-10-29T22:53:42.020746+00:00', 'pergunta': 'quantos creditos eu preciso fazer no mestrado??', 'resposta': 'De acordo com o Artigo 31º, alínea "a", pa...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:53:35.327955" elapsed="6.694963"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:53:42.022918" elapsed="0.000000"/>
+</kw>
+<arg>CT24</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:53:35.326411" elapsed="6.696507"/>
+</kw>
+<tag>robustez</tag>
+<status status="PASS" start="2026-10-29T19:53:35.326411" elapsed="6.696507"/>
+</test>
+<test id="s1-t5" name="CT25 Parafrase sobre prazo maximo do mestrado" line="15">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:53:42.023927" level="INFO">${caso} = {'id': 'CT25', 'categoria': 'robustez', 'subcategoria': 'parafrase', 'pergunta': 'Em quanto tempo, no máximo, tenho que terminar o mestrado sem precisar pedir prorrogação?', 'resposta_referencia': 'A ...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:53:42.023927" elapsed="0.000000"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:53:48.444603" level="INFO">Pergunta: Em quanto tempo, no máximo, tenho que terminar o mestrado sem precisar pedir prorrogação?
+Resposta (2.416 s): Com base nas informações do programa, a duração máxima regular para a conclusão do curso de Mestrado é de **24 (vinte e quatro)** meses (conforme o Art. 31º, alínea "a"). 
+
+Portanto, sem a necessidade de solicitar prorrogação, o prazo máximo para terminar o mestrado é de 24 meses.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:53:48.444603" level="INFO">${r} = {'caso_id': 'CT25', 'rodada': 1, 'timestamp': '2026-10-29T22:53:48.441070+00:00', 'pergunta': 'Em quanto tempo, no máximo, tenho que terminar o mestrado sem precisar pedir prorrogação?', 'resposta': '...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:53:42.024938" elapsed="6.419665"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:53:48.444603" elapsed="0.000000"/>
+</kw>
+<arg>CT25</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:53:42.023927" elapsed="6.420676"/>
+</kw>
+<tag>robustez</tag>
+<status status="PASS" start="2026-10-29T19:53:42.023927" elapsed="6.420676"/>
+</test>
+<doc>Robustez: variações de escrita e paráfrases devem levar à mesma resposta.</doc>
+<status status="PASS" start="2026-10-29T19:53:01.656081" elapsed="46.788522"/>
+</suite>
+<statistics>
+<total>
+<stat pass="5" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="1" fail="0" skip="0">contradicao</stat>
+<stat pass="5" fail="0" skip="0">robustez</stat>
+</tag>
+<suite>
+<stat name="robustez" id="s1" pass="5" fail="0" skip="0">robustez</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

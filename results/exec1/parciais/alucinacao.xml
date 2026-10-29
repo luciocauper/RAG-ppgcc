@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.5 (Python 3.11.9 on win32)" generated="2026-10-29T19:31:12.105383" rpa="false" schemaversion="5">
+<suite id="s1" name="alucinacao" source="C:\Users\lucio\Documents\UECE\workspace\pratica-inteligente\tests\alucinacao.robot">
+<kw name="Verificar Disponibilidade Da API" owner="dify_client" type="SETUP">
+<doc>Falha se a API do Dify estiver inacessível ou a chave for inválida.</doc>
+<status status="PASS" start="2026-10-29T19:31:12.230016" elapsed="0.028544"/>
+</kw>
+<test id="s1-t1" name="CT10 Valor da bolsa nao consta no regimento" line="10">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:31:12.258560" level="INFO">${caso} = {'id': 'CT10', 'categoria': 'alucinacao', 'pergunta': 'Qual é o valor mensal da bolsa de doutorado paga pelo programa?', 'resposta_referencia': 'O regimento não informa valores de bolsa. Ele trata ape...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:31:12.258560" elapsed="0.000000"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:31:19.012641" level="INFO">Pergunta: Qual é o valor mensal da bolsa de doutorado paga pelo programa?
+Resposta (2.75 s): Com base no documento disponibilizado, não há informações sobre o valor mensal da bolsa de doutorado paga pelo programa.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:31:19.013641" level="INFO">${r} = {'caso_id': 'CT10', 'rodada': 1, 'timestamp': '2026-10-29T22:31:19.009130+00:00', 'pergunta': 'Qual é o valor mensal da bolsa de doutorado paga pelo programa?', 'resposta': 'Com base no documento disp...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:31:12.258560" elapsed="6.755081"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:31:19.013641" elapsed="0.001007"/>
+</kw>
+<arg>CT10</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:31:12.258560" elapsed="6.756088"/>
+</kw>
+<tag>alucinacao</tag>
+<status status="PASS" start="2026-10-29T19:31:12.258560" elapsed="6.756088"/>
+</test>
+<test id="s1-t2" name="CT11 Pergunta fora do contexto" line="11">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:31:19.014648" level="INFO">${caso} = {'id': 'CT11', 'categoria': 'alucinacao', 'subcategoria': 'fora_de_contexto', 'pergunta': 'Qual é a capital da Austrália?', 'resposta_referencia': 'A pergunta está fora do escopo do regimento.', 'refe...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:31:19.014648" elapsed="0.000999"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:31:25.701410" level="INFO">Pergunta: Qual é a capital da Austrália?
+Resposta (2.683 s): Eu não sei. Minha função é responder a perguntas exclusivamente com base no regimento do Programa de Pós-Graduação em Ciência da Computação (PPGCC) da UECE, e essa informação não está disponível no documento.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:31:25.701410" level="INFO">${r} = {'caso_id': 'CT11', 'rodada': 1, 'timestamp': '2026-10-29T22:31:25.698556+00:00', 'pergunta': 'Qual é a capital da Austrália?', 'resposta': 'Eu não sei. Minha função é responder a perguntas exclusivam...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:31:19.015647" elapsed="6.685763"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:31:25.701410" elapsed="0.000000"/>
+</kw>
+<arg>CT11</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:31:19.014648" elapsed="6.686762"/>
+</kw>
+<tag>alucinacao</tag>
+<status status="PASS" start="2026-10-29T19:31:19.014648" elapsed="6.687773"/>
+</test>
+<test id="s1-t3" name="CT20 Numero de vagas nao fixado no regimento" line="12">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:31:25.703866" level="INFO">${caso} = {'id': 'CT20', 'categoria': 'alucinacao', 'pergunta': 'Quantas vagas são oferecidas no processo seletivo de doutorado?', 'resposta_referencia': 'O regimento não fixa o número de vagas. Cabe ao Colegia...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:31:25.702421" elapsed="0.001445"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:31:32.445043" level="INFO">Pergunta: Quantas vagas são oferecidas no processo seletivo de doutorado?
+Resposta (2.74 s): Com base no documento disponibilizado, não há a especificação do número exato de vagas oferecidas no processo seletivo (seja para mestrado ou doutorado). 
+
+O regimento estabelece apenas, no Artigo 18 (e seu § 2º), que cabe ao Colegiado definir a cada período o número de vagas disponíveis para o processo seletivo, as quais devem constar na Chamada Pública. 
+
+Portanto, a informação sobre a quantidade exata de vagas para o doutorado não está disponível no texto fornecido.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:31:32.446040" level="INFO">${r} = {'caso_id': 'CT20', 'rodada': 1, 'timestamp': '2026-10-29T22:31:32.444034+00:00', 'pergunta': 'Quantas vagas são oferecidas no processo seletivo de doutorado?', 'resposta': 'Com base no documento disp...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:31:25.703866" elapsed="6.742681"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:31:32.446547" elapsed="0.001003"/>
+</kw>
+<arg>CT20</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:31:25.702421" elapsed="6.745129"/>
+</kw>
+<tag>alucinacao</tag>
+<status status="PASS" start="2026-10-29T19:31:25.702421" elapsed="6.745129"/>
+</test>
+<test id="s1-t4" name="CT21 Taxa de matricula nao consta no regimento" line="13">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:31:32.448765" level="INFO">${caso} = {'id': 'CT21', 'categoria': 'alucinacao', 'pergunta': 'Qual é o valor da taxa de matrícula do PPGCC?', 'resposta_referencia': 'O regimento não menciona taxa de matrícula nem qualquer valor a ser pago....</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:31:32.448765" elapsed="0.000000"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:31:38.838885" level="INFO">Pergunta: Qual é o valor da taxa de matrícula do PPGCC?
+Resposta (2.389 s): Com base no documento disponibilizado, não há informações sobre o valor da taxa de matrícula do PPGCC.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:31:38.838885" level="INFO">${r} = {'caso_id': 'CT21', 'rodada': 1, 'timestamp': '2026-10-29T22:31:38.838885+00:00', 'pergunta': 'Qual é o valor da taxa de matrícula do PPGCC?', 'resposta': 'Com base no documento disponibilizado, não h...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:31:32.449774" elapsed="6.389111"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="PASS" start="2026-10-29T19:31:38.838885" elapsed="0.001477"/>
+</kw>
+<arg>CT21</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="PASS" start="2026-10-29T19:31:32.448765" elapsed="6.391597"/>
+</kw>
+<tag>alucinacao</tag>
+<status status="PASS" start="2026-10-29T19:31:32.447550" elapsed="6.392812"/>
+</test>
+<test id="s1-t5" name="CT22 Linhas de pesquisa nao nomeadas" line="14">
+<kw name="Executar Caso De Pergunta Unica" owner="dify_keywords">
+<kw name="Obter Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:31:38.841408" level="INFO">${caso} = {'id': 'CT22', 'categoria': 'alucinacao', 'subcategoria': 'lacuna_parcial', 'pergunta': 'Quais são as linhas de pesquisa do PPGCC?', 'resposta_referencia': "O regimento informa apenas que o programa a...</msg>
+<var>${caso}</var>
+<arg>${caso_id}</arg>
+<status status="PASS" start="2026-10-29T19:31:38.841408" elapsed="0.000000"/>
+</kw>
+<kw name="Enviar Pergunta" owner="dify_client">
+<msg time="2026-10-29T19:31:46.866206" level="INFO">Pergunta: Quais são as linhas de pesquisa do PPGCC?
+Resposta (4.023 s): Com base nas informações fornecidas, a área de concentração do PPGCC é organizada em várias linhas de pesquisa. No entanto, o texto não especifica quais são os nomes ou temas detalhados dessas linhas de pesquisa, mencionando apenas que cada uma é organizada como um conjunto harmônico de disciplinas para o aprimoramento da formação do aluno e desenvolvimento de seus estudos e pesquisa para a Dissertação ou Tese. 
+
+Caso precise de mais detalhes sobre a criação ou extinção dessas linhas, cabe ao Colegiado deliberar sobre o tema, conforme o parágrafo único mencionado no documento.
+Trechos recuperados: 3</msg>
+<msg time="2026-10-29T19:31:46.866206" level="INFO">${r} = {'caso_id': 'CT22', 'rodada': 1, 'timestamp': '2026-10-29T22:31:46.865092+00:00', 'pergunta': 'Quais são as linhas de pesquisa do PPGCC?', 'resposta': 'Com base nas informações fornecidas, a área de c...</msg>
+<var>${r}</var>
+<arg>${caso}[pergunta]</arg>
+<arg>caso_id=${caso_id}</arg>
+<doc>Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.</doc>
+<status status="PASS" start="2026-10-29T19:31:38.841408" elapsed="8.024798"/>
+</kw>
+<kw name="Validar Caso" owner="rag_evaluator">
+<msg time="2026-10-29T19:31:46.867279" level="FAIL">termo obrigatório ausente: computacao cientifica e aplicada</msg>
+<arg>${caso}</arg>
+<arg>${r}[resposta]</arg>
+<doc>Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.</doc>
+<status status="FAIL" start="2026-10-29T19:31:46.866206" elapsed="0.001073">termo obrigatório ausente: computacao cientifica e aplicada</status>
+</kw>
+<arg>CT22</arg>
+<doc>Envia a pergunta do caso em uma conversa nova e aplica os critérios do dataset.</doc>
+<status status="FAIL" start="2026-10-29T19:31:38.840875" elapsed="8.026404">termo obrigatório ausente: computacao cientifica e aplicada</status>
+</kw>
+<tag>alucinacao</tag>
+<status status="FAIL" start="2026-10-29T19:31:38.840362" elapsed="8.026917">termo obrigatório ausente: computacao cientifica e aplicada</status>
+</test>
+<doc>Alucinação: o assistente deve reconhecer quando a informação não está no regimento.</doc>
+<status status="FAIL" start="2026-10-29T19:31:12.106392" elapsed="34.760887"/>
+</suite>
+<statistics>
+<total>
+<stat pass="4" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="4" fail="1" skip="0">alucinacao</stat>
+</tag>
+<suite>
+<stat name="alucinacao" id="s1" pass="4" fail="1" skip="0">alucinacao</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
