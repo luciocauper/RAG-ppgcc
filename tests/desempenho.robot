@@ -7,19 +7,23 @@ Test Tags           desempenho
 
 *** Test Cases ***
 CT17 Latencia dentro do limite
-    ${resultados}=    Repetir Pergunta Do Caso    CT17    %{REPETICOES_CONSISTENCIA=3}
-    Validar Latencia    ${resultados}    %{LIMITE_LATENCIA_S=30}
+    [Documentation]    Todas as repetições devem ter latência abaixo do limite configurado.
+    [Tags]    CT17
+    Given o caso de teste    CT17
+    When a pergunta é repetida    %{REPETICOES_CONSISTENCIA=3}
+    Then a latência máxima deve estar dentro do limite    %{LIMITE_LATENCIA_S=30}
 
 CT18 Consistencia entre repeticoes
-    ${caso}=    Obter Caso    CT18
-    ${resultados}=    Repetir Pergunta Do Caso    CT18    %{REPETICOES_CONSISTENCIA=3}
-    FOR    ${r}    IN    @{resultados}
-        Run Keyword And Continue On Failure    Validar Caso    ${caso}    ${r}[resposta]
-    END
-    Validar Consistencia    ${resultados}    %{LIMITE_SIMILARIDADE_CONSISTENCIA=0.5}
+    [Documentation]    Respostas repetidas devem ser factualmente corretas e lexicalmente similares.
+    [Tags]    CT18
+    Given o caso de teste    CT18
+    When a pergunta é repetida    %{REPETICOES_CONSISTENCIA=3}
+    Then cada resposta deve atender aos critérios do caso
+    And a similaridade entre respostas deve estar acima do mínimo    %{LIMITE_SIMILARIDADE_CONSISTENCIA=0.5}
 
 CT19 Entrada extensa tratada sem erro de servidor
-    ${caso}=    Obter Caso    CT19
-    ${preenchimento}=    Evaluate    "Considere o regimento do programa. " * ${caso}[repeticoes_preenchimento]
-    ${status}=    Obter Status Da Requisicao    ${preenchimento}${caso}[pergunta]
-    Should Be True    ${status} < 500    Servidor retornou erro ${status} para entrada extensa
+    [Documentation]    Uma entrada muito longa deve ser tratada sem erro 5xx (responder ou rejeitar com 4xx).
+    [Tags]    CT19
+    Given o caso de teste    CT19
+    When uma entrada extensa é enviada
+    Then o servidor não deve retornar erro 5xx

@@ -26,7 +26,7 @@ documento `datasets/documentos/Regimento_PPGCC-UECE2021.pdf`.
 | Top K / score threshold / rerank | 4 / desligado / sem rerank (Gemini não oferece modelo de rerank) |
 | Versão do prompt de sistema | 1.0 (`docs/prompt_sistema.md`) |
 | LLM juiz do Ragas | Gemini — `gemini-3.5-flash` (modelo diferente e mais capaz que o do SUT, para reduzir viés de autoavaliação; mesma família, o que fica como ameaça à validade) |
-| Versões de Python / Robot Framework / Ragas | |
+| Versões de Python / Robot Framework / Ragas | Python 3.12.10 · Robot Framework 7.x · Ragas 0.2.x · pytest 9.2.0 |
 
 Observações sobre a base de conhecimento:
 

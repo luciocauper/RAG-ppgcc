@@ -10,6 +10,12 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+# Garantir saída UTF-8 no terminal do Windows (emoji nos status)
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except AttributeError:
+    pass
+
 RAIZ = Path(__file__).resolve().parent.parent
 SIMBOLO = {"PASS": "✅", "FAIL": "❌", "SKIP": "⏭️"}
 

@@ -68,8 +68,9 @@ Sistema operacional usado: Windows 11 (16 GB RAM, RTX 3050 6 GB — a GPU acabou
 | `infra/dify/README.md` | Instalação do Dify e decisões de infraestrutura, em detalhe |
 | `datasets/documentos/Regimento_PPGCC-UECE2021.pdf` | Base de conhecimento |
 | `datasets/casos_teste.json` | Golden dataset (30 casos) |
-| `tests/*.robot` | 7 suítes: `api`, `factualidade`, `alucinacao`, `robustez`, `seguranca`, `conversa`, `desempenho` |
-| `resources/dify_keywords.robot` | Keywords compartilhadas |
+| `tests/*.robot` | 7 suítes BDD: `api`, `factualidade`, `alucinacao`, `robustez`, `seguranca`, `conversa`, `desempenho` |
+| `tests/unit/` | Testes unitários das bibliotecas Python (pytest, 49 testes) |
+| `resources/dify_keywords.robot` | Keywords BDD compartilhadas (Given/When/Then) |
 | `libraries/dify_client.py` | Cliente da API do Dify (registro das respostas, retentativas, pausa entre chamadas) |
 | `libraries/rag_evaluator.py` | Verificações: termos obrigatórios/proibidos, reconhecimento de ausência, citação de artigo, latência, consistência |
 | `scripts/subir_ambiente.ps1` | Sobe o Dify no WSL e mantém o Ubuntu ativo |
@@ -77,10 +78,15 @@ Sistema operacional usado: Windows 11 (16 GB RAM, RTX 3050 6 GB — a GPU acabou
 | `scripts/executar.sh` | Roda uma execução numerada (suíte por suíte) e une os relatórios |
 | `scripts/consolidar.py` | Tabela comparativa das execuções → `results/consolidado.md` |
 | `scripts/avaliar_ragas.py` | Métricas semânticas com Ragas |
+| `scripts/gerar_apresentacao.py` | Gera a apresentação PowerPoint (12 slides, 16:9) |
 | `docs/prompt_sistema.txt` | Prompt de sistema congelado (v1.0) — é este o texto colado no Dify |
 | `docs/prompt_sistema.md` | O mesmo prompt, com as regras de uso |
 | `docs/protocolo_testes.md` | Protocolo: configuração exata do experimento, critérios, calibração e registro das execuções |
-| `docs/relatorio.md` | Esqueleto do relatório |
+| `docs/auditoria_tecnica.md` | Auditoria técnica: problemas identificados, decisões e correções aplicadas |
+| `docs/checklist_entrega.md` | Checklist final de entrega: itens validados e pendências |
+| `docs/relatorio.md` | Relatório técnico final (13 seções) |
+| `apresentação/Apresentacao_Tecnica_RAG_PPGCC.pptx` | Apresentação PowerPoint (12 slides, 16:9) |
+| `apresentação/roteiro_apresentacao.md` | Roteiro da apresentação com tempo por slide |
 | `results/exec1..3/` | Execuções oficiais (versionadas): `report.html`, `log.html`, `output.xml`, `respostas.jsonl` (pergunta, resposta, trechos recuperados, latência) |
 | `results/consolidado.md` | Comparação das 3 execuções por caso e por suíte |
 
@@ -305,8 +311,9 @@ Relatórios: `results\execN\report.html` e `results\execN\log.html`.
 
 ## 9. Atividades pendentes (continuação do trabalho)
 
-Situação em 29/10/2026: ambiente montado, dataset conferido e **3 execuções oficiais concluídas**
-(`results/exec1..3`). Falta a avaliação semântica, a análise das falhas, o relatório e a apresentação.
+Situação em 02/11/2026: ambiente montado, dataset conferido, **3 execuções oficiais concluídas**
+(`results/exec1..3`), suítes refatoradas para BDD, testes unitários criados, relatório e
+apresentação finalizados. A avaliação semântica com Ragas ainda não foi executada (cota do Gemini).
 
 **Prazos:** relatório em **04/11/2026** · apresentação em **16/11/2026**.
 
@@ -322,21 +329,22 @@ Situação em 29/10/2026: ambiente montado, dataset conferido e **3 execuções 
 
 ### 9.2 Preparar o ambiente Python
 
-- [ ] `python -m venv .venv`, ativar e `pip install -r requirements.txt` (inclui Ragas e `langchain-openai`).
-- [ ] `copy .env.example .env` e preencher `RAGAS_LLM_API_KEY` com a chave do Gemini
+- [x] `python -m venv .venv`, ativar e `pip install -r requirements.txt` (inclui Ragas e `langchain-openai`).
+- [x] `copy .env.example .env` e preencher `RAGAS_LLM_API_KEY` com a chave do Gemini
       (https://aistudio.google.com/apikey).
 
-### 9.3 Métricas semânticas com Ragas (prioridade 1)
+### 9.3 Métricas semânticas com Ragas (prioridade 1 — pendente)
 
-O `scripts/avaliar_ragas.py` **ainda não foi executado de verdade** — só foi escrito. Pode exigir
-pequenos ajustes de compatibilidade com a versão do Ragas instalada (nomes de classes/colunas).
+O `scripts/avaliar_ragas.py` foi escrito e validado sintaticamente (`python -m py_compile`), mas
+**ainda não foi executado de verdade**. Pode exigir ajustes de compatibilidade com a versão do
+Ragas instalada (nomes de classes/colunas).
 
 - [ ] Rodar para cada execução (os casos elegíveis são os marcados com `"ragas"` no dataset e com
       trechos recuperados; cerca de 20 por execução):
       ```powershell
-      python scripts\avaliar_ragas.py --resultados results\exec1\respostas.jsonl --saida results\exec1\metricas_ragas.csv
-      python scripts\avaliar_ragas.py --resultados results\exec2\respostas.jsonl --saida results\exec2\metricas_ragas.csv
-      python scripts\avaliar_ragas.py --resultados results\exec3\respostas.jsonl --saida results\exec3\metricas_ragas.csv
+      python scripts/avaliar_ragas.py --resultados results\exec1\respostas.jsonl --saida results\exec1\metricas_ragas.csv
+      python scripts/avaliar_ragas.py --resultados results\exec2\respostas.jsonl --saida results\exec2\metricas_ragas.csv
+      python scripts/avaliar_ragas.py --resultados results\exec3\respostas.jsonl --saida results\exec3\metricas_ragas.csv
       ```
 - [ ] Cada amostra gera várias chamadas ao juiz (`gemini-3.5-flash`). Com a cota gratuita, provavelmente
       será preciso **uma execução por dia** ou reduzir `RAGAS_MAX_WORKERS` para 1. Se a cota acabar no
@@ -347,41 +355,31 @@ pequenos ajustes de compatibilidade com a versão do Ragas instalada (nomes de c
 - [ ] Olhar os casos com nota baixa: o Ragas e as verificações determinísticas concordam?
       (ex.: CT09 deve ter Factual Correctness baixa; CT18 deve ter nota alta apesar da similaridade lexical baixa).
 
-### 9.4 Análise das falhas (prioridade 2)
+### 9.4 Análise das falhas (concluída)
 
 Fonte: `results/consolidado.md` e os `respostas.jsonl` (campos `resposta`, `contextos`, `fontes`).
 
-- [ ] **CT28 / CT30 (conversa):** verificar a hipótese de que o Chatbot do Dify busca na base usando só a
-      última mensagem. Comparar os `contextos` recuperados no 2º turno ("E no mestrado?", "E no
-      doutorado?") com os do 1º turno: se os trechos do Art. 31, a / Art. 43, §1º não aparecem, a falha é
-      de **recuperação**; se aparecem e mesmo assim a resposta está errada, é de **geração**.
-      O caso da exec 3 do CT28 ("28 créditos") é alucinação: conferir se o número 28 aparece em algum trecho.
-- [ ] **CT09 (contradição):** conferir se o trecho do Art. 39 (chunk que começa com "39. O desempenho")
-      foi recuperado. Lembrar que o rótulo "Art. 39" ficou partido entre dois chunks (ver protocolo).
-- [ ] **CT18:** mostrar que as 3 respostas são factualmente iguais e discutir a limitação da similaridade lexical.
-- [ ] **CT21 (exec 3) e CT22 (exec 1):** registrar como falso negativo do avaliador e falha parcial, respectivamente.
-- [ ] Montar uma tabela: caso · execuções em que falhou · tipo (recuperação / geração / oráculo) · evidência.
+- [x] **CT28 / CT30 (conversa):** confirmada a hipótese de que o Chatbot do Dify busca na base usando só a
+      última mensagem. Os contextos recuperados no 2º turno ("E no mestrado?", "E no doutorado?")
+      não incluem os trechos do Art. 31a / Art. 43§1º — é **falha de recuperação**. O caso da exec 3
+      do CT28 ("28 créditos") é alucinação: o número 28 não aparece em nenhum trecho recuperado.
+- [x] **CT09 (contradição):** conferido que o trecho do Art. 39 (chunk que começa com "39. O desempenho")
+      foi recuperado, mas o SUT não o usa para apontar a divergência — é **falha de geração** (o modelo
+      não relaciona os dois dispositivos).
+- [x] **CT18:** documentado que as 3 respostas são factualmente iguais e discutida a limitação da similaridade lexical.
+- [x] **CT21 (exec 3) e CT22 (exec 1):** registrados como falso negativo do avaliador e falha parcial do oráculo, respectivamente.
+- [x] Montada tabela de falhas no relatório (seção 9 de `docs/relatorio.md`).
 
-### 9.5 Relatório (`docs/relatorio.md`) — entrega 04/11
+### 9.5 Relatório (`docs/relatorio.md`) — concluído
 
-As seções já estão criadas com comentários do que entra em cada uma. Material pronto para usar:
+- [x] Relatório finalizado com todas as 13 seções do enunciado (introdução, fundamentação, SUT,
+      metodologia, estratégia, ferramentas, resultados, análise de falhas, ameaças, discussão,
+      conclusão, referências).
 
-- [ ] **Sistema sob teste e metodologia:** seções 1, 2 e 4 deste arquivo + tabela de configuração e
-      critérios de `docs/protocolo_testes.md` + `infra/dify/README.md` (decisões de infraestrutura).
-- [ ] **Resultados:** tabelas de `results/consolidado.md`, métricas do Ragas (9.3), latências.
-- [ ] **Discussão:** análise das falhas (9.4). Pontos fortes: segurança 12/12 e robustez 15/15.
-- [ ] **Ameaças à validade** (já identificadas):
-      - avaliador por expressões regulares → falsos negativos (calibração preliminar + CT21 exec 3);
-      - juiz do Ragas da mesma família do modelo testado (Gemini);
-      - temperatura não configurável no plugin → não determinismo (medido pelas 3 execuções);
-      - um único documento, 30 casos;
-      - modelos do plano gratuito podem mudar de versão; limites de cota;
-      - chunking com ruído da extração do PDF ("Art. 3 9", imagens do cabeçalho).
-- [ ] **Conclusão e referências** (Dify, Gemini, Ragas, Robot Framework, regimento).
+### 9.6 Apresentação — 16/11 (concluída)
 
-### 9.6 Apresentação — 16/11 (15 minutos)
-
-- [ ] Slides: problema → SUT → metodologia (dataset + avaliação em dois níveis) → resultados → achados → limitações.
+- [x] Slides gerados em `apresentação/Apresentacao_Tecnica_RAG_PPGCC.pptx` (12 slides, 16:9, com gráficos).
+- [x] Roteiro da apresentação em `apresentação/roteiro_apresentacao.md`.
 - [ ] **Demonstração ao vivo** (exige o Dify configurado na máquina da apresentação, seção 6):
       `python scripts\smoke_test.py` e uma suíte curta, por exemplo
       `bash scripts/executar.sh demo seguranca`. Com `DIFY_INTERVALO_S=50` cada pergunta leva quase

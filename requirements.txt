@@ -7,3 +7,12 @@ python-dotenv>=1.0
 ragas>=0.2,<0.3
 langchain-openai>=0.2
 pandas>=2.0
+
+# Extração do PDF para conferência do golden dataset (uso opcional)
+pypdf>=4.0
+
+# Testes unitários das bibliotecas Python (validações determinísticas)
+pytest>=8.0
+
+# Geração do relatório acadêmico em Word
+python-docx>=1.1

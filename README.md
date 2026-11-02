@@ -1,38 +1,53 @@
-# Testes automatizados de um sistema inteligente RAG — Assistente PPGCC/UECE
+# Avaliação Automatizada da Qualidade de um Sistema Inteligente Baseado em RAG
 
-Trabalho da disciplina de Teste de Sistemas Inteligentes. O sistema sob teste (SUT) é um chatbot RAG
-construído no [Dify Community](https://github.com/langgenius/dify) (self-hosted), que responde perguntas
-sobre o [Regimento do PPGCC/UECE](https://www.uece.br/ppgcc/wp-content/uploads/sites/51/2019/11/Regimento_PPGCC-UECE2021-.pdf).
-A suíte, em Robot Framework, chama a API do Dify, aplica verificações determinísticas e registra as
-respostas para avaliação semântica com Ragas.
+Trabalho da disciplina de **Teste de Sistemas Inteligentes** (PPGCC/UECE). O sistema sob teste
+(SUT) é um chatbot RAG construído no [Dify Community](https://github.com/langgenius/dify)
+(self-hosted), que responde perguntas sobre o
+[Regimento do PPGCC/UECE](datasets/documentos/Regimento_PPGCC-UECE2021.pdf) usando o Google Gemini
+como LLM. A suíte, em Robot Framework, chama a API do Dify, aplica verificações determinísticas e
+registra as respostas para avaliação semântica com Ragas.
 
-**Documentação completa (tecnologias, histórico, resultados e passo a passo para replicar):
+**Documentação completa (tecnologias, histórico, passo a passo para replicar):
 [instrucoes.md](instrucoes.md).**
 
+## Arquitetura
+
 ```
-Robot Framework (tests/*.robot)
-   └─ libraries/dify_client.py  ──HTTP──▶  Dify (Docker) ─▶ LLM + base de conhecimento (regimento)
-   └─ libraries/rag_evaluator.py  (termos, ausência de informação, latência, consistência)
+Robot Framework (tests/*.robot, BDD Given/When/Then)
+   └─ resources/dify_keywords.robot       ← keywords compartilhadas (comportamento)
+   └─ libraries/dify_client.py            ← cliente HTTP da API do Dify (implementação)
+   └─ libraries/rag_evaluator.py          ← verificações determinísticas (oráculo)
           │
           ▼
-results/respostas.jsonl ──▶ scripts/avaliar_ragas.py ──▶ results/metricas_ragas.csv
+results/execN/respostas.jsonl ──▶ scripts/avaliar_ragas.py ──▶ results/execN/metricas_ragas.csv
+results/execN/output.xml       ──▶ scripts/consolidar.py    ──▶ results/consolidado.md
 ```
 
-## Estrutura
+## Estrutura do repositório
 
 | Caminho | Conteúdo |
 |---|---|
-| `infra/dify/README.md` | Instalação do Dify Community e configuração do app |
 | `datasets/documentos/` | PDF do regimento (base de conhecimento) |
-| `datasets/casos_teste.json` | Golden dataset: perguntas, referências e critérios |
-| `tests/` | Suítes por categoria: api, factualidade, alucinacao, robustez, seguranca, conversa, desempenho |
-| `resources/dify_keywords.robot` | Keywords compartilhadas |
-| `libraries/` | Cliente da API do Dify e verificações determinísticas |
-| `scripts/` | Smoke test e cálculo das métricas Ragas |
-| `docs/` | Protocolo, prompt de sistema congelado e relatório |
-| `results/` | Saídas das execuções (não versionadas) |
+| `datasets/casos_teste.json` | Golden dataset: 30 casos com perguntas, referências e critérios |
+| `tests/*.robot` | 7 suítes BDD: api, factualidade, alucinacao, robustez, seguranca, conversa, desempenho |
+| `tests/unit/` | Testes unitários das bibliotecas Python (pytest) |
+| `resources/dify_keywords.robot` | Keywords BDD compartilhadas (Given/When/Then) |
+| `libraries/` | Cliente da API do Dify e oráculo determinístico |
+| `scripts/` | Smoke test, execução numerada, consolidação e métricas Ragas |
+| `docs/` | Protocolo, prompt de sistema congelado, relatório e auditoria |
+| `infra/dify/README.md` | Instalação do Dify Community e configuração do app |
+| `results/exec1..3/` | Execuções oficiais (evidências: output.xml, respostas.jsonl, report.html) |
+| `apresentacao/` | PowerPoint técnico e roteiro da apresentação |
 
-## Como executar
+## Pré-requisitos
+
+- **Python 3.11+** (testado com 3.12.10)
+- **Robot Framework 7.0+** (instalado via `requirements.txt`)
+- **Dify Community** self-hosted (Docker) — necessário apenas para executar os testes, não para
+  analisar resultados existentes
+- **Conta Google** com chave gratuita do Gemini (AI Studio) — para o LLM do chatbot e o juiz do Ragas
+
+## Configuração
 
 ```bash
 # 1. Ambiente Python
@@ -41,22 +56,58 @@ python -m venv .venv
 pip install -r requirements.txt
 
 # 2. Subir e configurar o Dify: ver infra/dify/README.md
-# 3. Configurar credenciais
-cp .env.example .env              # preencher DIFY_API_KEY
 
-# 4. Prova de conceito
+# 3. Configurar credenciais
+cp .env.example .env              # preencher DIFY_API_KEY e RAGAS_LLM_API_KEY
+```
+
+## Execução dos testes
+
+```bash
+# Smoke test (diagnóstico manual — imprime resposta e trechos recuperados)
 python scripts/smoke_test.py
 
-# 5. Suíte completa (ou por categoria: --include factual)
+# Suíte completa (ou por categoria: --include factual)
 robot -d results tests/
 
-# 6. Métricas semânticas
-python scripts/avaliar_ragas.py
+# Execução numerada do experimento (Git Bash; roda suíte por suíte e une com rebot)
+bash scripts/executar.sh 1
+
+# Validação de sintaxe sem chamar a API
+python -m robot --dryrun tests/
+
+# Testes unitários das bibliotecas Python
+python -m pytest tests/unit/ -v
 ```
 
 Relatórios do Robot: `results/report.html` e `results/log.html`.
 
-## Estado do dataset
+## Execução das métricas semânticas
 
-Os casos com `"verificado": false` usam referências sugeridas durante o planejamento e devem ser
-conferidos no PDF antes de valer como oráculo. Casos sem critérios definidos são marcados como *SKIP*.
+```bash
+# Comparar as execuções oficiais
+python scripts/consolidar.py 1 2 3
+
+# Métricas Ragas de uma execução (exige RAGAS_LLM_API_KEY no .env)
+python scripts/avaliar_ragas.py --resultados results/exec1/respostas.jsonl --saida results/exec1/metricas_ragas.csv
+```
+
+## Localização dos resultados
+
+- **Resultados por caso e por suíte:** `results/consolidado.md`
+- **Evidências por execução:** `results/execN/output.xml`, `respostas.jsonl`, `report.html`
+- **Relatório técnico:** `docs/relatorio.md`
+- **Auditoria técnica:** `docs/auditoria_tecnica.md`
+- **Apresentação:** `apresentacao/Apresentacao_Tecnica_RAG_PPGCC.pptx`
+
+## Principais limitações
+
+- O oráculo determinístico verifica **presença de termos**, não correção semântica. Uma resposta
+  pode conter os termos esperados e ainda estar incorreta. A avaliação semântica (Ragas) complementa,
+  mas não substitui a análise humana.
+- O LLM juiz do Ragas é da mesma família do modelo do SUT (Gemini), o que pode introduzir viés de
+  autoavaliação.
+- O dataset cobre um único documento (regimento) com 30 casos — insuficiente para generalização.
+- A temperatura do modelo não é configurável no plugin do Gemini no Dify, gerando não determinismo
+  medido pelas 3 execuções.
+- As métricas semânticas com Ragas **ainda não foram executadas** (dependem de cota do Gemini).
