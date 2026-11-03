@@ -1,113 +1,88 @@
-# Avaliação Automatizada da Qualidade de um Sistema Inteligente Baseado em RAG
+de automação e documentos têm versões fixadas; dependências semânticas opcionais
+diferente; não interprete diferenças de ambiente como evolução do sistema.
+o ambiente. Não altere os limiares para aprovar respostas observadas.
+o próximo diretório `execN`, executa smoke e os 33 testes sem smoke, registra
+da exec4; para resultados atuais, use os Word e PowerPoint acima.
+# RAG-PPGCC
 
-Trabalho da disciplina de **Teste de Sistemas Inteligentes** (PPGCC/UECE). O sistema sob teste
-(SUT) é um chatbot RAG construído no [Dify Community](https://github.com/langgenius/dify)
-(self-hosted), que responde perguntas sobre o
-[Regimento do PPGCC/UECE](datasets/documentos/Regimento_PPGCC-UECE2021.pdf) usando o Google Gemini
-como LLM. A suíte, em Robot Framework, chama a API do Dify, aplica verificações determinísticas e
-registra as respostas para avaliação semântica com Ragas.
-
-**Documentação completa (tecnologias, histórico, passo a passo para replicar):
-[instrucoes.md](instrucoes.md).**
+Projeto acadêmico de Teste de Sistemas Inteligentes (PPGCC/UECE) que avalia, por API,
+um assistente RAG no Dify sobre o Regimento do PPGCC. A suíte mantém 30 cenários
+experimentais em BDD e verificações de infraestrutura separadas.
 
 ## Arquitetura
 
-```
-Robot Framework (tests/*.robot, BDD Given/When/Then)
-   └─ resources/dify_keywords.robot       ← keywords compartilhadas (comportamento)
-   └─ libraries/dify_client.py            ← cliente HTTP da API do Dify (implementação)
-   └─ libraries/rag_evaluator.py          ← verificações determinísticas (oráculo)
-          │
-          ▼
-results/execN/respostas.jsonl ──▶ scripts/avaliar_ragas.py ──▶ results/execN/metricas_ragas.csv
-results/execN/output.xml       ──▶ scripts/consolidar.py    ──▶ results/consolidado.md
+```text
+tests/*.robot -> resources/dify_keywords.robot
+              -> libraries/dify_client.py + libraries/rag_evaluator.py
+output.xml + respostas.jsonl -> scripts/consolidar.py -> Word por execução
+                              -> scripts/gerar_relatorio.py -> Word acadêmico
+                              -> scripts/gerar_apresentacao.py -> PowerPoint
 ```
 
-## Estrutura do repositório
+## Tecnologias
 
-| Caminho | Conteúdo |
-|---|---|
-| `datasets/documentos/` | PDF do regimento (base de conhecimento) |
-| `datasets/casos_teste.json` | Golden dataset: 30 casos com perguntas, referências e critérios |
-| `tests/*.robot` | 7 suítes BDD: api, factualidade, alucinacao, robustez, seguranca, conversa, desempenho |
-| `tests/unit/` | Testes unitários das bibliotecas Python (pytest) |
-| `resources/dify_keywords.robot` | Keywords BDD compartilhadas (Given/When/Then) |
-| `libraries/` | Cliente da API do Dify e oráculo determinístico |
-| `scripts/` | Smoke test, execução numerada, consolidação e métricas Ragas |
-| `docs/` | Protocolo, prompt de sistema congelado, relatório e auditoria |
-| `infra/dify/README.md` | Instalação do Dify Community e configuração do app |
-| `results/exec1..3/` | Execuções oficiais (evidências: output.xml, respostas.jsonl, report.html) |
-| `apresentacao/` | PowerPoint técnico e roteiro da apresentação |
+Python, Robot Framework, pytest, requests, python-docx, python-pptx e Pillow.
+Ragas é um avaliador complementar opcional; não há métricas Ragas nesta entrega.
 
-## Pré-requisitos
+## Pré-requisitos e ambiente
 
-- **Python 3.11+** (testado com 3.12.10)
-- **Robot Framework 7.0+** (instalado via `requirements.txt`)
-- **Dify Community** self-hosted (Docker) — necessário apenas para executar os testes, não para
-  analisar resultados existentes
-- **Conta Google** com chave gratuita do Gemini (AI Studio) — para o LLM do chatbot e o juiz do Ragas
+Python 3.11+ e Windows PowerShell 5.1. Crie o ambiente e instale as dependências:
 
-## Configuração
-
-```bash
-# 1. Ambiente Python
+```powershell
 python -m venv .venv
-.venv\Scripts\activate            # Windows (Git Bash: source .venv/Scripts/activate)
-pip install -r requirements.txt
-
-# 2. Subir e configurar o Dify: ver infra/dify/README.md
-
-# 3. Configurar credenciais
-cp .env.example .env              # preencher DIFY_API_KEY e RAGAS_LLM_API_KEY
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-## Execução dos testes
+## Configuração do .env
 
-```bash
-# Smoke test (diagnóstico manual — imprime resposta e trechos recuperados)
-python scripts/smoke_test.py
+Copie `.env.example` para `.env` e preencha `DIFY_API_URL` e `DIFY_API_KEY`.
+`RAGAS_LLM_API_KEY` é necessária apenas para avaliação semântica. Nunca versione
+credenciais. O setup local do Dify e as configurações experimentais estão descritos
+em [infra/dify/README.md](infra/dify/README.md) e [docs/protocolo_testes.md](docs/protocolo_testes.md).
 
-# Suíte completa (ou por categoria: --include factual)
-robot -d results tests/
+## Robot Framework
 
-# Execução numerada do experimento (Git Bash; roda suíte por suíte e une com rebot)
-bash scripts/executar.sh 1
+Validações sem acesso externo:
 
-# Validação de sintaxe sem chamar a API
-python -m robot --dryrun tests/
-
-# Testes unitários das bibliotecas Python
-python -m pytest tests/unit/ -v
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests/unit -q
+.\.venv\Scripts\python.exe -m robot --dryrun --outputdir results/local/dryrun tests/
 ```
 
-Relatórios do Robot: `results/report.html` e `results/log.html`.
+Execução real, que consome a API, é opcional:
 
-## Execução das métricas semânticas
-
-```bash
-# Comparar as execuções oficiais
-python scripts/consolidar.py 1 2 3
-
-# Métricas Ragas de uma execução (exige RAGAS_LLM_API_KEY no .env)
-python scripts/avaliar_ragas.py --resultados results/exec1/respostas.jsonl --saida results/exec1/metricas_ragas.csv
+```powershell
+.\scripts\executar_windows.ps1 -Modo completo
 ```
 
-## Localização dos resultados
+## Relatórios Word
 
-- **Resultados por caso e por suíte:** `results/consolidado.md`
-- **Evidências por execução:** `results/execN/output.xml`, `respostas.jsonl`, `report.html`
-- **Relatório técnico:** `docs/relatorio.md`
-- **Auditoria técnica:** `docs/auditoria_tecnica.md`
-- **Apresentação:** `apresentacao/Apresentacao_Tecnica_RAG_PPGCC.pptx`
+```powershell
+.\.venv\Scripts\python.exe scripts/consolidar.py 1 2 3 4
+.\.venv\Scripts\python.exe scripts/gerar_relatorio.py
+.\.venv\Scripts\python.exe scripts/gerar_apresentacao.py
+```
 
-## Principais limitações
+O relatório acadêmico é `results/Relatorio_Final_Testes_RAG_PPGCC.docx`.
+Cada execução tem seu Word individual em `results/execN/`. A apresentação e o roteiro
+de 15 minutos ficam em `apresentação/`.
 
-- O oráculo determinístico verifica **presença de termos**, não correção semântica. Uma resposta
-  pode conter os termos esperados e ainda estar incorreta. A avaliação semântica (Ragas) complementa,
-  mas não substitui a análise humana.
-- O LLM juiz do Ragas é da mesma família do modelo do SUT (Gemini), o que pode introduzir viés de
-  autoavaliação.
-- O dataset cobre um único documento (regimento) com 30 casos — insuficiente para generalização.
-- A temperatura do modelo não é configurável no plugin do Gemini no Dify, gerando não determinismo
-  medido pelas 3 execuções.
-- As métricas semânticas com Ragas **ainda não foram executadas** (dependem de cota do Gemini).
+## Evidências
+
+As quatro execuções oficiais estão em `results/exec1` a `results/exec4`, com XML, HTML,
+JSONL e documentos Word. Não confunda os testes de API/infraestrutura com os 30 casos
+experimentais. Exec1–3 tiveram 26/30 casos experimentais aprovados; exec4, 25/30.
+
+## Estrutura
+
+```text
+datasets/       golden dataset e documento de referência
+docs/           protocolo experimental e prompt congelado
+infra/          notas específicas do ambiente Dify
+libraries/      cliente da API e avaliador determinístico
+resources/      keywords Robot compartilhadas
+results/        evidências, relatórios Word e execuções oficiais
+scripts/        execução, avaliação e geração de entregáveis
+tests/          suítes Robot e testes unitários Python
+apresentação/   PowerPoint e roteiro
+```

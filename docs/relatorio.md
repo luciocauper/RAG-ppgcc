@@ -234,7 +234,7 @@ Taxa de aprovação geral: **88,2%** (média nas 3 execuções: 30/34).
 
 ### Resultado por caso
 
-Ver `results/consolidado.md` para a tabela completa.
+Consulte `results/Relatorio_Final_Testes_RAG_PPGCC.docx` para a síntese acadêmica e os relatórios Word em `results/execN/` para os resultados por execução. As evidências primárias estão nos arquivos XML, HTML e JSONL correspondentes.
 
 ### Métricas semânticas (Ragas)
 

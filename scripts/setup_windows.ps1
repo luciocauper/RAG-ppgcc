@@ -68,13 +68,16 @@ $reqPath = Join-Path $Raiz "requirements.txt"
 & $py -m pip install -r "$reqPath" --quiet 2>&1 | ForEach-Object {
     if ($_ -match "error|ERROR|Error") { Escrever-Erro $_ }
 }
+if ($LASTEXITCODE -ne 0) {
+    Escrever-Erro "Instalacao das dependencias falhou."
+    exit 1
+}
 # Verificar pacotes essenciais
-$pacotes = @("robot", "requests", "dotenv", "pptx", "docx", "pytest")
+$pacotes = @("robot", "requests", "dotenv", "pptx", "docx", "pytest", "PIL")
 $todosOk = $true
 foreach ($p in $pacotes) {
-    $mod = if ($p -eq "dotenv") { "dotenv" } elseif ($p -eq "pptx") { "pptx" } elseif ($p -eq "docx") { "docx" } else { $p }
-    $check = & $py -c "import $mod; print('ok')" 2>&1
-    if ($check -match "ok") {
+    & $py -c "import $p"
+    if ($LASTEXITCODE -eq 0) {
         Escrever-OK "Pacote $p"
     } else {
         Escrever-Erro "Pacote $p nao disponivel"
@@ -82,7 +85,7 @@ foreach ($p in $pacotes) {
     }
 }
 if (-not $todosOk) {
-    Escrever-Aviso "Alguns pacotes nao instalaram. Tente: & $py -m pip install -r requirements.txt"
+    Escrever-Aviso ('Alguns pacotes nao instalaram. Tente: & {0} -m pip install -r requirements.txt' -f $py)
 }
 
 # --- 4. Verificar .env ---
@@ -107,29 +110,40 @@ $envContent = Get-Content $envPath -Raw
 $chavesObrigatorias = @("DIFY_API_KEY", "DIFY_API_URL")
 $chavesOpcionais = @("RAGAS_LLM_API_KEY")
 foreach ($chave in $chavesObrigatorias) {
-    if ($envContent -match "${chave}=(.+)") {
-        $valor = $Matches[1].Trim()
-        if ($valor -match "xxx|sua-chave|app-xxxx") {
-            Escrever-Aviso "$chave ainda tem placeholder — preencha com a chave real do Dify"
-        } else {
-            Escrever-OK "$chave configurada"
+    $valor = $null
+    foreach ($linha in $envContent.Split([Environment]::NewLine)) {
+        if ($linha.StartsWith($chave + "=")) {
+            $valor = $linha.Substring($chave.Length + 1).Trim()
+            break
         }
-    } else {
-        Escrever-Aviso "$chave ausente no .env"
     }
+    if (-not $valor) {
+        Escrever-Aviso "$chave ausente no .env"
+        continue
+    }
+    if ($valor.Contains("xxx") -or $valor.Contains("sua-chave") -or $valor.Contains("app-xxxx")) {
+        Escrever-Aviso "$chave ainda tem placeholder - preencha com a chave real do Dify"
+        continue
+    }
+    Escrever-OK "$chave configurada"
 }
 foreach ($chave in $chavesOpcionais) {
-    if ($envContent -match "${chave}=(.+)") {
-        $valor = $Matches[1].Trim()
-        if ($valor -match "sua-chave|xxx") {
-            Escrever-Aviso "$chave tem placeholder — necessaria apenas para Ragas"
-        } else {
-            Escrever-OK "$chave configurada"
+    $valor = $null
+    foreach ($linha in $envContent.Split([Environment]::NewLine)) {
+        if ($linha.StartsWith($chave + "=")) {
+            $valor = $linha.Substring($chave.Length + 1).Trim()
+            break
         }
-    } else {
-        Escrever-Info "$chave ausente (necessaria apenas para metricas Ragas)"
     }
-}
+    if (-not $valor) {
+        Escrever-Info "$chave ausente (necessaria apenas para metricas Ragas)"
+        continue
+    }
+    if ($valor.Contains("sua-chave") -or $valor.Contains("xxx")) {
+        Escrever-Aviso "$chave tem placeholder — necessaria apenas para Ragas"
+        continue
+    }
+    Escrever-OK "$chave configurada"
 
 # --- 5. Resumo ---
 Write-Host ""
@@ -143,6 +157,6 @@ if ($todosOk) {
     Escrever-OK "Ambiente preparado com sucesso."
     exit 0
 } else {
-    Escrever-Aviso "Ambiente parcialmente preparado — revise os avisos acima."
-    exit 0
+    Escrever-Aviso "Ambiente parcialmente preparado - revise os avisos acima."
+    exit 1
 }

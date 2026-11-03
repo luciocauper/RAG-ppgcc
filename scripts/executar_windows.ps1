@@ -1,179 +1,103 @@
 <#
 .SYNOPSIS
-    Executa os testes do projeto RAG-PPGCC no Windows.
+    Executa testes e gera relatorios individuais, sem sobrescrever execucoes.
 .DESCRIPTION
-    Interface centralizada de execucao por modo:
-      smoke        - Apenas o smoke test da API (tag smoke)
-      unit         - Testes unitarios Python (pytest)
-      completo     - Unit + smoke + todas as suites + consolidacao
-      consolidar   - Consolida resultados das execucoes oficiais 1-3
-      ragas        - Metricas semanticas (requer cota do Gemini)
-.PARAMETER Modo
-    Modo de execucao (obrigatorio).
-.PARAMETER Exec
-    Numero da execucao para o modo 'completo' (default: proximo disponivel).
-.EXAMPLE
-    .\scripts\executar_windows.ps1 -Modo smoke
-    .\scripts\executar_windows.ps1 -Modo unit
-    .\scripts\executar_windows.ps1 -Modo completo
-    .\scripts\executar_windows.ps1 -Modo consolidar
-    .\scripts\executar_windows.ps1 -Modo ragas -Exec 1
+    Windows PowerShell 5.1. Modos smoke, completo e ragas podem consumir API.
+    unit e relatorios sao locais. consolidar e um alias de relatorios.
 #>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)]
-    [ValidateSet("smoke", "unit", "completo", "consolidar", "ragas")]
+    [ValidateSet("smoke", "unit", "completo", "relatorios", "consolidar", "ragas")]
     [string]$Modo,
-
+    [ValidateRange(1, 2147483647)]
     [int]$Exec
 )
-
 $ErrorActionPreference = "Stop"
 $Raiz = Split-Path -Parent $PSScriptRoot
 $py = Join-Path $Raiz ".venv\Scripts\python.exe"
-if (-not (Test-Path $py)) { $py = "python" }
-
-function Escrever-Titulo { param($msg) Write-Host "`n===== $msg =====" -ForegroundColor Cyan }
-function Escrever-OK     { param($msg) Write-Host "  [OK]    $msg" -ForegroundColor Green }
-function Escrever-Falha  { param($msg) Write-Host "  [FALHA] $msg" -ForegroundColor Red }
-function Escrever-Info   { param($msg) Write-Host "  [INFO]  $msg" -ForegroundColor Gray }
-
+if (-not (Test-Path -LiteralPath $py)) { $py = "python" }
 $codigoSaida = 0
+$saidaAnterior = $env:RESULTADOS_JSONL
+$encodingAnterior = $env:PYTHONIOENCODING
+Push-Location -LiteralPath $Raiz
+try {
+    $env:PYTHONIOENCODING = "utf-8"
+    & $py -c "import robot, requests, dotenv, docx, PIL"
+    if ($LASTEXITCODE -ne 0) { throw "Dependencias ausentes. Instale requirements.txt." }
 
-switch ($Modo) {
-
-    "smoke" {
-        Escrever-Titulo "SMOKE TEST (API do Dify)"
-        Escrever-Info "Verifica disponibilidade da API e chave."
-        Escrever-Info "Requer Dify rodando e DIFY_API_KEY configurada."
-        & $py -m robot --include smoke --outputdir "$Raiz\results\smoke_temp" "$Raiz\tests\api.robot" 2>&1 | ForEach-Object { Write-Host $_ }
-        if ($LASTEXITCODE -eq 0) {
-            Escrever-OK "Smoke test passou. Ambiente disponivel."
-        } else {
-            Escrever-Falha "Smoke test falhou. Verifique se o Dify esta rodando e se a chave e valida."
-            $codigoSaida = 1
+    switch ($Modo) {
+        "unit" {
+            & $py -m pytest tests/unit -q
+            $codigoSaida = $LASTEXITCODE
         }
-        Remove-Item -Recurse -Force "$Raiz\results\smoke_temp" -ErrorAction SilentlyContinue
-    }
-
-    "unit" {
-        Escrever-Titulo "TESTES UNITARIOS (pytest)"
-        & $py -m pytest "$Raiz\tests\unit" -v --tb=short 2>&1 | ForEach-Object { Write-Host $_ }
-        if ($LASTEXITCODE -eq 0) {
-            Escrever-OK "Todos os testes unitarios passaram."
-        } else {
-            Escrever-Falha "Testes unitarios falharam."
-            $codigoSaida = 1
+        "smoke" {
+            $temporario = Join-Path $Raiz ("results\local\smoke-" + [guid]::NewGuid().ToString("N"))
+            & $py -m robot --include smoke --outputdir $temporario tests/api.robot
+            $codigoSaida = $LASTEXITCODE
+            Write-Host "Evidencias do smoke: $temporario"
         }
-    }
+        "completo" {
+            & $py -c "from libraries.dify_client import DifyClient; c=DifyClient(); assert c.api_key and not c.api_key.startswith('app-xxx'), 'Configure DIFY_API_KEY no .env'"
+            if ($LASTEXITCODE -ne 0) { throw "Configuracao do ambiente incompleta." }
+            if (-not $PSBoundParameters.ContainsKey("Exec")) {
+                $numeros = @(Get-ChildItem -LiteralPath (Join-Path $Raiz "results") -Directory |
+                    Where-Object { $_.Name -match '^exec\d+$' } |
+                    ForEach-Object { [int]($_.Name.Substring(4)) })
+                $Exec = 1
+                if ($numeros.Count -gt 0) { $Exec = [int](($numeros | Measure-Object -Maximum).Maximum) + 1 }
+            }
+            $saidaDir = Join-Path $Raiz "results\exec$Exec"
+            if (Test-Path -LiteralPath $saidaDir) { throw "Diretorio ja existe: $saidaDir. Nada foi executado." }
+            & $py -m pytest tests/unit -q
+            if ($LASTEXITCODE -ne 0) { throw "Testes unitarios falharam." }
 
-    "completo" {
-        Escrever-Titulo "EXECUCAO COMPLETA"
+            # Sem -Force: a reserva tambem falha se outro processo criar a pasta.
+            New-Item -ItemType Directory -Path $saidaDir -ErrorAction Stop | Out-Null
+            $env:RESULTADOS_JSONL = Join-Path $saidaDir "respostas.jsonl"
+            Write-Host "Execucao ${Exec}: chamadas ao Dify/Gemini."
+            & $py -m robot --include smoke --outputdir (Join-Path $saidaDir "smoke") tests/api.robot
+            if ($LASTEXITCODE -ne 0) { throw "Smoke falhou. Evidencias preservadas em $saidaDir\smoke." }
 
-        # Determinar numero da execucao
-        if (-not $Exec) {
-            $exes = @(Get-ChildItem "$Raiz\results" -Directory | Where-Object { $_.Name -match "^exec\d+$" } | ForEach-Object { [int]($_.Name -replace "exec", "") })
-            $Exec = if ($exes.Count -gt 0) { ($exes | Measure-Object -Maximum).Maximum + 1 } else { 1 }
+            & $py -m robot --exclude smoke --outputdir $saidaDir tests/
+            $codigoRobot = $LASTEXITCODE
+            if (-not (Test-Path -LiteralPath (Join-Path $saidaDir "output.xml"))) {
+                throw "Robot nao produziu output.xml. Codigo: $codigoRobot."
+            }
+            # Mesmo com assertions FAIL, produzir o relatorio e preservar o codigo Robot.
+            & $py scripts/consolidar.py $Exec
+            $codigoRelatorio = $LASTEXITCODE
+            $codigoSaida = $codigoRobot
+            if ($codigoRelatorio -ne 0) { $codigoSaida = $codigoRelatorio }
+            Write-Host "Execucao $Exec concluida. Robot=$codigoRobot; Word=$codigoRelatorio."
+            Write-Host "Evidencias: $saidaDir"
         }
-        $saidaDir = "$Raiz\results\exec$Exec"
-        Escrever-Info "Diretorio de saida: results\exec$Exec"
-        Escrever-Info "ATENCAO: Esta execucao chama a API do Dify (consome cota do Gemini)."
-        Escrever-Info "         Pressione Ctrl+C para cancelar se necessario."
-
-        # 1. Testes unitarios
-        Escrever-Titulo "1. Testes unitarios"
-        & $py -m pytest "$Raiz\tests\unit" -q --tb=short 2>&1 | ForEach-Object { Write-Host $_ }
-        if ($LASTEXITCODE -ne 0) { Escrever-Falha "Testes unitarios falharam."; $codigoSaida = 1; break }
-
-        # 2. Smoke test
-        Escrever-Titulo "2. Smoke test"
-        & $py -m robot --include smoke --outputdir "$Raiz\results\smoke_check" "$Raiz\tests\api.robot" 2>&1 | ForEach-Object { Write-Host $_ }
-        if ($LASTEXITCODE -ne 0) {
-            Escrever-Falha "Smoke falhou. Ambiente indisponivel — abortando suites dependentes do Dify."
-            Remove-Item -Recurse -Force "$Raiz\results\smoke_check" -ErrorAction SilentlyContinue
-            $codigoSaida = 1
-            break
+        { $_ -in @("relatorios", "consolidar") } {
+            if ($PSBoundParameters.ContainsKey("Exec")) {
+                & $py scripts/consolidar.py $Exec
+            } else {
+                & $py scripts/consolidar.py
+            }
+            $codigoSaida = $LASTEXITCODE
         }
-        Escrever-OK "Ambiente disponivel."
-        Remove-Item -Recurse -Force "$Raiz\results\smoke_check" -ErrorAction SilentlyContinue
-
-        # 3. Suites completas
-        Escrever-Titulo "3. Suites completas (34 testes)"
-        New-Item -ItemType Directory -Path "$saidaDir\parciais" -Force | Out-Null
-        $env:RESULTADOS_JSONL = "$saidaDir\respostas.jsonl"
-        $env:PYTHONIOENCODING = "utf-8"
-        $suites = @("api", "factualidade", "alucinacao", "robustez", "seguranca", "conversa", "desempenho")
-        foreach ($suite in $suites) {
-            Escrever-Info "Executando: $suite"
-            & $py -m robot --name $suite --outputdir "$saidaDir\parciais" --output "$suite.xml" --log NONE --report NONE "$Raiz\tests\$suite.robot" 2>&1 | ForEach-Object { Write-Host $_ }
-        }
-
-        # 4. Unir resultados com rebot
-        Escrever-Titulo "4. Unindo resultados (rebot)"
-        $parciais = (Get-ChildItem "$saidaDir\parciais\*.xml" | ForEach-Object { $_.FullName }) -join " "
-        & $py -m robot.rebot --name "Execucao $Exec" --outputdir "$saidaDir" --output output.xml $parciais 2>&1 | Out-Null
-        Escrever-OK "Relatorios gerados em: results\exec$Exec\"
-
-        # 5. Consolidar
-        Escrever-Titulo "5. Consolidacao"
-        $exesConsolidar = @(Get-ChildItem "$Raiz\results" -Directory | Where-Object { $_.Name -match "^exec\d+$" } | ForEach-Object { $_.Name -replace "exec", "" })
-        $exesConsolidar = $exesConsolidar | ForEach-Object { [int]$_ } | Sort-Object
-        $exesArg = $exesConsolidar -join " "
-        & $py "$Raiz\scripts\consolidar.py" $exesArg 2>&1 | ForEach-Object { Write-Host $_ }
-        Escrever-OK "Consolidado em: results\consolidado.md"
-
-        Escrever-Titulo "RESUMO"
-        Escrever-OK "Execucao $Exec concluida. Veja: results\exec$Exec\report.html"
-        Write-Host "  Evidencias: results\exec$Exec\output.xml, respostas.jsonl" -ForegroundColor White
-        Write-Host "  Consolidado: results\consolidado.md" -ForegroundColor White
-    }
-
-    "consolidar" {
-        Escrever-Titulo "CONSOLIDACAO DE RESULTADOS"
-        $exes = @(Get-ChildItem "$Raiz\results" -Directory | Where-Object { $_.Name -match "^exec\d+$" } | ForEach-Object { $_.Name -replace "exec", "" })
-        if ($exes.Count -eq 0) {
-            Escrever-Falha "Nenhuma execucao encontrada em results\"
-            $codigoSaida = 1
-            break
-        }
-        $exesArg = ($exes | ForEach-Object { [int]$_ } | Sort-Object) -join " "
-        Escrever-Info "Execucoes: $exesArg"
-        & $py "$Raiz\scripts\consolidar.py" $exesArg 2>&1 | ForEach-Object { Write-Host $_ }
-        Escrever-OK "Consolidado em: results\consolidado.md"
-    }
-
-    "ragas" {
-        Escrever-Titulo "METRICAS SEMANTICAS (Ragas)"
-        if (-not $Exec) {
-            Escrever-Info "Uso: -Exec N (ex.: -Exec 1 para results\exec1)"
-            Escrever-Falha "Especifique a execucao com -Exec N"
-            $codigoSaida = 1
-            break
-        }
-        $jsonl = "$Raiz\results\exec$Exec\respostas.jsonl"
-        $csvSaida = "$Raiz\results\exec$Exec\metricas_ragas.csv"
-        if (-not (Test-Path $jsonl)) {
-            Escrever-Falha "Arquivo nao encontrado: $jsonl"
-            $codigoSaida = 1
-            break
-        }
-        Escrever-Info "Entrada: results\exec$Exec\respostas.jsonl"
-        Escrever-Info "Saida:   results\exec$Exec\metricas_ragas.csv"
-        Escrever-Info "ATENCAO: Esta execucao chama o Gemini como juiz (consome cota)."
-        & $py "$Raiz\scripts\avaliar_ragas.py" --resultados $jsonl --saida $csvSaida 2>&1 | ForEach-Object { Write-Host $_ }
-        if ($LASTEXITCODE -eq 0) {
-            Escrever-OK "Metricas salvas em: results\exec$Exec\metricas_ragas.csv"
-        } else {
-            Escrever-Falha "Falha ao calcular metricas. Verifique a cota do Gemini e RAGAS_LLM_API_KEY."
-            $codigoSaida = 1
+        "ragas" {
+            if (-not $PSBoundParameters.ContainsKey("Exec")) { throw "Informe -Exec para avaliar uma execucao." }
+            $entrada = Join-Path $Raiz "results\exec$Exec\respostas.jsonl"
+            $metricas = Join-Path $Raiz "results\exec$Exec\metricas_ragas.csv"
+            if (-not (Test-Path -LiteralPath $entrada)) { throw "Respostas nao encontradas: $entrada" }
+            if (Test-Path -LiteralPath $metricas) { throw "Metricas ja existem: $metricas" }
+            & $py scripts/avaliar_ragas.py --resultados $entrada --saida $metricas
+            $codigoSaida = $LASTEXITCODE
         }
     }
 }
-
-Write-Host ""
-if ($codigoSaida -eq 0) {
-    Escrever-OK "Concluido com sucesso."
-} else {
-    Escrever-Falha "Concluido com erros."
+catch {
+    Write-Host ("FALHA: " + $_.Exception.Message) -ForegroundColor Red
+    $codigoSaida = 1
+}
+finally {
+    $env:RESULTADOS_JSONL = $saidaAnterior
+    $env:PYTHONIOENCODING = $encodingAnterior
+    Pop-Location
 }
 exit $codigoSaida
