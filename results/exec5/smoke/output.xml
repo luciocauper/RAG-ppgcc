@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.5 (Python 3.11.9 on win32)" generated="2026-11-03T23:13:44.348144" rpa="false" schemaversion="5">
+<suite id="s1" name="Tests" source="C:\Users\lucio\Documents\UECE\Workspace\pratica-ana\RAG-ppgcc\tests">
+<suite id="s1-s1" name="Api" source="C:\Users\lucio\Documents\UECE\Workspace\pratica-ana\RAG-ppgcc\tests\api.robot">
+<test id="s1-s1-t1" name="API Disponivel Com Chave Valida" line="9">
+<kw name="Given que a API está acessível" owner="dify_keywords">
+<kw name="Verificar Disponibilidade Da API" owner="dify_client">
+<doc>Falha se a API do Dify estiver inacessível ou a chave for inválida.</doc>
+<status status="PASS" start="2026-11-03T23:13:44.604293" elapsed="0.068240"/>
+</kw>
+<doc>Verifica se a API do Dify responde e a chave é válida.</doc>
+<status status="PASS" start="2026-11-03T23:13:44.603289" elapsed="0.069244"/>
+</kw>
+<doc>Verifica se a API do Dify responde e a chave de aplicação é aceita.</doc>
+<tag>api</tag>
+<tag>smoke</tag>
+<status status="PASS" start="2026-11-03T23:13:44.602784" elapsed="0.070261"/>
+</test>
+<doc>Verificações básicas da API do Dify (pré-condição das demais suítes).
+Esta suíte também funciona como smoke test automatizado do ambiente.</doc>
+<status status="PASS" start="2026-11-03T23:13:44.470072" elapsed="0.203496"/>
+</suite>
+<status status="PASS" start="2026-11-03T23:13:44.349130" elapsed="0.325559"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+<stat pass="1" fail="0" skip="0">api</stat>
+<stat pass="1" fail="0" skip="0">smoke</stat>
+</tag>
+<suite>
+<stat name="Tests" id="s1" pass="1" fail="0" skip="0">Tests</stat>
+<stat name="Api" id="s1-s1" pass="1" fail="0" skip="0">Tests.Api</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

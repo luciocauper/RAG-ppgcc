@@ -1,0 +1,134 @@
+{
+  "execucao": 6,
+  "modo": "ciclo_completo",
+  "inicio_em": "2026-11-04T04:36:17.979777+00:00",
+  "estado": "parcial",
+  "etapas": {
+    "smoke": {
+      "estado": "aprovado",
+      "atualizado_em": "2026-11-04T04:36:25.587947+00:00",
+      "codigo_saida": 0,
+      "evidencias": "C:\\Users\\lucio\\Documents\\UECE\\Workspace\\pratica-ana\\RAG-ppgcc\\results\\exec6\\smoke"
+    },
+    "unit": {
+      "estado": "aprovado",
+      "atualizado_em": "2026-11-04T04:36:29.571520+00:00",
+      "codigo_saida": 0,
+      "evidencias": "C:\\Users\\lucio\\Documents\\UECE\\Workspace\\pratica-ana\\RAG-ppgcc\\results\\exec6\\unit\\resultado_pytest.txt"
+    },
+    "robot": {
+      "estado": "reprovado",
+      "atualizado_em": "2026-11-04T04:42:25.218298+00:00",
+      "codigo_saida": 3,
+      "output_xml": "C:\\Users\\lucio\\Documents\\UECE\\Workspace\\pratica-ana\\RAG-ppgcc\\results\\exec6\\output.xml",
+      "respostas_jsonl": "C:\\Users\\lucio\\Documents\\UECE\\Workspace\\pratica-ana\\RAG-ppgcc\\results\\exec6\\respostas.jsonl"
+    },
+    "ragas": {
+      "estado": "parcial",
+      "atualizado_em": "2026-11-04T05:13:58.224188+00:00",
+      "status_file": "C:\\Users\\lucio\\Documents\\UECE\\Workspace\\pratica-ana\\RAG-ppgcc\\results\\exec6\\ragas\\status_avaliacao.json",
+      "validas": 3,
+      "falhas": 44,
+      "ausentes": 1
+    },
+    "relatorio_individual": {
+      "estado": "gerado",
+      "atualizado_em": "2026-11-04T05:14:02.932238+00:00",
+      "arquivo": "C:\\Users\\lucio\\Documents\\UECE\\Workspace\\pratica-ana\\RAG-ppgcc\\results\\exec6\\Relatorio_Execucao_06.docx"
+    },
+    "relatorio_academico": {
+      "estado": "gerado",
+      "atualizado_em": "2026-11-04T05:14:07.218702+00:00",
+      "arquivo": "C:\\Users\\lucio\\Documents\\UECE\\Workspace\\pratica-ana\\RAG-ppgcc\\results\\Relatorio_Final_Testes_RAG_PPGCC.docx"
+    }
+  },
+  "ambiente_inicial": {
+    "estado": "operacional",
+    "checks": {
+      "wsl": "disponível",
+      "ubuntu": "em execução",
+      "docker": "29.1.3",
+      "servicos": [
+        {
+          "name": "agent_backend",
+          "state": "running"
+        },
+        {
+          "name": "agent_ssrf_proxy",
+          "state": "running"
+        },
+        {
+          "name": "api",
+          "state": "running"
+        },
+        {
+          "name": "api_websocket",
+          "state": "running"
+        },
+        {
+          "name": "db_postgres",
+          "state": "running"
+        },
+        {
+          "name": "local_sandbox",
+          "state": "running"
+        },
+        {
+          "name": "nginx",
+          "state": "running"
+        },
+        {
+          "name": "plugin_daemon",
+          "state": "running"
+        },
+        {
+          "name": "redis",
+          "state": "running"
+        },
+        {
+          "name": "sandbox",
+          "state": "running"
+        },
+        {
+          "name": "ssrf_proxy",
+          "state": "running"
+        },
+        {
+          "name": "weaviate",
+          "state": "running"
+        },
+        {
+          "name": "web",
+          "state": "running"
+        },
+        {
+          "name": "worker",
+          "state": "running"
+        },
+        {
+          "name": "worker_beat",
+          "state": "running"
+        }
+      ],
+      "api": "HTTP 200",
+      "configuracao": {
+        "arquivo_env": true,
+        "url_configurada": true,
+        "chave_configurada": true
+      },
+      "python": {
+        "robotframework": true,
+        "pytest": true,
+        "requests": true,
+        "python-dotenv": true,
+        "python-docx": true,
+        "ragas": true,
+        "langchain-openai": true
+      }
+    },
+    "servicos_essenciais_ok": true,
+    "python_essencial_ok": true
+  },
+  "atualizado_em": "2026-11-04T05:14:07.218702+00:00",
+  "concluido_em": "2026-11-04T05:14:07.220709+00:00"
+}
