@@ -4,10 +4,12 @@ Uso: python scripts/consolidar.py [1 2 3 4]
 Sem argumentos, descobre execuções que contém output.xml. Não altera evidências.
 """
 import argparse
+import csv
 from collections import Counter
 import hashlib
 from io import BytesIO
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -273,6 +275,77 @@ def detalhes(doc, e, t, contextos=True):
         doc.add_paragraph("Há turnos planejados sem registro de resposta; não foram contados como testes independentes.")
 
 
+def resumo_ragas(pasta):
+    pasta = Path(pasta)
+    status_path = pasta / "ragas" / "status_avaliacao.json"
+    csv_path = pasta / "ragas" / "metricas_ragas.csv"
+    legado = pasta / "metricas_ragas.csv"
+    if not csv_path.exists() and legado.exists():
+        csv_path = legado
+    metricas = ("faithfulness", "factual_correctness", "llm_context_precision_with_reference")
+    status = json.loads(status_path.read_text(encoding="utf-8")) if status_path.exists() else {}
+    por_metrica = status.get("por_metrica", {})
+    if csv_path.exists():
+        with csv_path.open(encoding="utf-8-sig", newline="") as arquivo:
+            linhas = list(csv.DictReader(arquivo))
+        if linhas and "metrica" in linhas[0]:
+            for nome in metricas:
+                valores = [float(r["valor"]) for r in linhas
+                           if r.get("metrica") == nome and r.get("status") == "calculada"
+                           and r.get("valor") not in (None, "")]
+                por_metrica.setdefault(nome, {
+                    "validos": len(valores),
+                    "falhas": sum(r.get("metrica") == nome and r.get("status", "").startswith("erro_") for r in linhas),
+                    "ausentes": sum(r.get("metrica") == nome and r.get("status") == "ausente" for r in linhas),
+                    "media": statistics.mean(valores) if valores else None,
+                })
+        elif linhas:
+            for nome in metricas:
+                valores = []
+                for linha in linhas:
+                    try:
+                        valor = float(linha.get(nome, ""))
+                        if math.isfinite(valor):
+                            valores.append(valor)
+                    except (TypeError, ValueError):
+                        continue
+                por_metrica.setdefault(nome, {"validos": len(valores), "falhas": 0,
+                                              "ausentes": len(linhas)-len(valores),
+                                              "media": statistics.mean(valores) if valores else None})
+    if not status and csv_path.exists():
+        status = {"estado": "parcial", "modelo_configurado": "metadados indisponíveis",
+                  "versao_ragas": "metadados indisponíveis"}
+    return {
+        "estado": status.get("estado", "não avaliada"),
+        "modelo": status.get("modelo_configurado", "não informado"),
+        "versao": status.get("versao_ragas", "não informada"),
+        "rpm": status.get("rpm_configurado"),
+        "amostras_elegiveis": status.get("amostras_elegiveis", 0),
+        "por_metrica": por_metrica,
+    }
+
+
+def adicionar_resultados_ragas(doc, execucoes):
+    doc.add_heading("Avaliação semântica Ragas", 2)
+    nomes = ("faithfulness", "factual_correctness", "llm_context_precision_with_reference")
+    linhas = []
+    for e in execucoes:
+        resultado = resumo_ragas(e["pasta"])
+        for nome in nomes:
+            metrica = resultado["por_metrica"].get(nome, {})
+            validos = metrica.get("validos", 0)
+            media = metrica.get("media")
+            estado = "não avaliada" if resultado["estado"] == "não avaliada" else (
+                "calculada" if validos and media is not None else resultado["estado"]
+            )
+            linhas.append([e["numero"], nome, estado, validos,
+                           f"{media:.3f}" if media is not None and validos else "—",
+                           metrica.get("falhas", 0), metrica.get("ausentes", 0)])
+    tabela(doc, ["Exec.", "Métrica", "Estado", "N válido", "Média", "Falhas", "Ausentes"], linhas)
+    doc.add_paragraph("Médias calculadas somente sobre valores válidos; falhas e ausências não são convertidas em zero. "
+                      "Consulte ragas/status_avaliacao.json em cada execução para modelo, versão, cota e metadados.")
+
+
 def gerar_relatorio(e):
     n = e["numero"]
     doc = documento(f"Relatório de execução {n:02d}")
@@ -327,6 +400,18 @@ def gerar_relatorio(e):
                       "demonstram melhoria ou regressão. Contextos são evidência observável, não rastreio interno do Dify.")
     for aviso in e["avisos"]:
         doc.add_paragraph(aviso)
+    ragas = resumo_ragas(e["pasta"])
+    doc.add_heading("Avaliação semântica Ragas", 2)
+    if ragas["estado"] == "não avaliada":
+        doc.add_paragraph("Ragas não foi executado para esta execução; nenhuma métrica semântica foi calculada.")
+    else:
+        tabela(doc, ["Métrica", "Estado", "N válido", "Média", "Falhas", "Ausentes"], [
+            [nome, ("calculada" if dados.get("validos") and dados.get("media") is not None else ragas["estado"]),
+             dados.get("validos", 0),
+             f'{dados["media"]:.3f}' if dados.get("media") is not None and dados.get("validos") else "—",
+             dados.get("falhas", 0), dados.get("ausentes", 0)]
+            for nome, dados in ragas["por_metrica"].items()])
+        doc.add_paragraph(f"Modelo configurado: {ragas['modelo']} · Ragas: {ragas['versao']} · RPM: {ragas['rpm']}.")
     for t in e["testes"]:
         if t["id"] == "CT28" and t["status"] == "PASS" and "32 (trinta e dois)" in "\n".join(
                 r.get("resposta", "") for r in registros(e, t)):

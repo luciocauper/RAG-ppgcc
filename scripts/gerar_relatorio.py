@@ -2,7 +2,8 @@
 from pathlib import Path
 import statistics
 
-from consolidar import (LIMITACOES, categorias, detalhes, descobrir_execucoes, documento,
+from consolidar import (LIMITACOES, adicionar_resultados_ragas, categorias, detalhes,
+                        descobrir_execucoes, documento,
                         grafico, ler_execucao, resumo, tabela)
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -128,6 +129,7 @@ def gerar():
     doc.add_paragraph("A média abrange os registros JSONL, não todas as chamadas HTTP. Pausas e tentativas "
                       "anteriores não entram na latência registrada. A máxima global não determina o "
                       "resultado de CT17, cujo limite se aplica somente às repetições daquele caso.")
+    adicionar_resultados_ragas(doc, execucoes)
     doc.add_heading("9. Comparação e análise qualitativa", 1)
     ids = sorted({t["id"] for e in execucoes for t in e["testes"] if t["status"] == "FAIL"})
     tabela(doc, ["ID", *[f"Exec{e['numero']}" for e in execucoes]], [
@@ -207,6 +209,7 @@ def gerar():
     SAIDA.parent.mkdir(parents=True, exist_ok=True)
     doc.save(SAIDA)
     print(SAIDA)
+    return SAIDA
 
 
 if __name__ == "__main__":

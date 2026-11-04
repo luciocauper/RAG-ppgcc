@@ -89,3 +89,26 @@ def test_word_bloqueado_preserva_original_e_continua_lote(execucao, monkeypatch,
         p.text for p in Document(alternativo).paragraphs)
     assert (segunda / "Relatorio_Execucao_06.docx").exists()
     assert "original foi preservado" in capsys.readouterr().err
+
+
+def test_resumo_ragas_usa_somente_metricas_validas(execucao):
+    (execucao / "ragas").mkdir()
+    (execucao / "ragas/status_avaliacao.json").write_text(json.dumps({
+        "estado": "parcial", "modelo_configurado": "gemini-3.5-flash",
+        "versao_ragas": "0.2.15", "rpm_configurado": 5,
+    }), encoding="utf-8")
+    (execucao / "ragas/metricas_ragas.csv").write_text(
+        "caso_id,rodada,metrica,status,valor\n"
+        "CT01,1,faithfulness,calculada,0.8\n"
+        "CT02,1,faithfulness,calculada,0.6\n"
+        "CT03,1,faithfulness,erro_cota,\n"
+        "CT04,1,faithfulness,ausente,\n",
+        encoding="utf-8",
+    )
+
+    resumo = consolidar.resumo_ragas(execucao)
+
+    faithfulness = resumo["por_metrica"]["faithfulness"]
+    assert resumo["estado"] == "parcial"
+    assert resumo["modelo"] == "gemini-3.5-flash"
+    assert faithfulness == {"validos": 2, "falhas": 1, "ausentes": 1, "media": 0.7}
