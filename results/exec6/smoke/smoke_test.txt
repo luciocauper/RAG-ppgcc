@@ -1,0 +1,7 @@
+Resposta (3.129 s):
+De acordo com o Art. 37 do regimento, o professor deverá conceder um conceito numérico de 0,0 a 10,0, sendo considerado aprovado o aluno que obtiver conceito igual ou superior a 7,0 (sete). Portanto, a nota mínima para aprovação em uma disciplina é 7,0.
+
+Trechos recuperados: 3
+- [Regimento_PPGCC-UECE2021.pdf | score 0.7529849410057068] 'Caso o aluno não obtenha a aprovação de sua Proposta de Dissertação ou Qualificação de \nTese até o prazo previsto no caput deste artigo será automatic'
+- [Regimento_PPGCC-UECE2021.pdf | score 0.7390771508216858] '39\uf0b0. O desempenho do aluno será considerado insatisfatório, sendo automaticamente \ndesligado do programa, ocorrendo qualquer um dos seguintes casos:\r\n'
+- [Regimento_PPGCC-UECE2021.pdf | score 0.7179197669029236] 'O número de créditos de aproveitamento de disciplinas cursadas externamente ao PPGCC\r\nnão poderá ultrapassar 50% (cinquenta por cento) do número de cr'

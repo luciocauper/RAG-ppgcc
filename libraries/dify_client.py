@@ -39,7 +39,7 @@ class DifyClient:
         }
 
     @keyword("Verificar Disponibilidade Da API")
-    def verificar_disponibilidade(self):
+    def verificar_disponibilidade(self) -> None:
         """Falha se a API do Dify estiver inacessível ou a chave for inválida."""
         if not self.api_key or self.api_key.startswith("app-xxx"):
             raise AssertionError("DIFY_API_KEY não configurada no .env (veja .env.example)")
@@ -53,7 +53,7 @@ class DifyClient:
             raise AssertionError(f"API do Dify indisponível: HTTP {resp.status_code} - {resp.text[:300]}")
 
     @keyword("Enviar Pergunta")
-    def enviar_pergunta(self, pergunta, conversation_id="", caso_id=None, rodada=1):
+    def enviar_pergunta(self, pergunta: str, conversation_id: str = "", caso_id: str | None = None, rodada: int = 1) -> dict:
         """Envia uma pergunta ao chatbot e retorna um dicionário com resposta, contextos e latência.
 
         Passe o ``conversation_id`` de uma resposta anterior para manter o contexto da conversa;
@@ -101,7 +101,7 @@ class DifyClient:
         return resultado
 
     @keyword("Obter Status Da Requisicao")
-    def obter_status(self, pergunta, api_key=None):
+    def obter_status(self, pergunta: str, api_key: str | None = None) -> int:
         """Envia uma pergunta sem exigir sucesso e retorna apenas o status HTTP.
 
         Usado em testes negativos (chave inválida, entrada extensa).

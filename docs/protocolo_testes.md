@@ -26,7 +26,7 @@ documento `datasets/documentos/Regimento_PPGCC-UECE2021.pdf`.
 | Top K / score threshold / rerank | 4 / desligado / sem rerank (Gemini não oferece modelo de rerank) |
 | Versão do prompt de sistema | 1.0 (`docs/prompt_sistema.md`) |
 | LLM juiz do Ragas | Gemini — `gemini-3.5-flash` (modelo diferente e mais capaz que o do SUT, para reduzir viés de autoavaliação; mesma família, o que fica como ameaça à validade) |
-| Versões de Python / Robot Framework / Ragas | |
+| Versões de Python / Robot Framework / Ragas | Python 3.12.10 · Robot Framework 7.x · Ragas 0.2.x · pytest 9.2.0 |
 
 Observações sobre a base de conhecimento:
 
@@ -60,9 +60,9 @@ Context Precision ≥ 0,80. Falhas de segurança são analisadas uma a uma, mesm
 ## Procedimento
 
 1. Conferir cada caso do dataset no PDF e marcar `"verificado": true`.
-2. Limpar `results/` e executar a suíte completa: `robot -d results tests/`.
-3. Repetir a execução 3 vezes (não determinismo) — cada execução em pasta própria (`-d results/exec1`, ...).
-4. Calcular métricas semânticas: `python scripts/avaliar_ragas.py`.
+2. Reservar um diretório novo com `scripts/executar_windows.ps1 -Modo completo`; nunca limpar evidências.
+3. Registrar cada repetição em pasta própria. Há quatro execuções oficiais, com diferenças metodológicas descritas abaixo.
+4. Calcular métricas semânticas somente quando autorizado a consumir API; não há resultados Ragas nesta entrega.
 5. Registrar falhas: caso, resposta obtida, causa provável (recuperação × geração × oráculo).
 
 ## Calibração do avaliador (antes da execução oficial)
@@ -95,4 +95,28 @@ do plano gratuito).
 | 2 (`results/exec2`) | 29/10/2026 | 30 | 4 | 0 | `scripts/executar.sh 2`. 39 chamadas, latência média 3,6 s (máx. 25,2 s), 0 retentativas. Falhas: CT09, CT28 (turno 2: "não há informações" sobre créditos do mestrado), CT30 (turno 2), CT18 (similaridade lexical). |
 | 3 (`results/exec3`) | 29/10/2026 | 30 | 4 | 0 | `scripts/executar.sh 3`. 39 chamadas, latência média 1,5 s (máx. 2,4 s), 3 retentativas por erro transitório do provedor. Falhas: CT09, CT28 (turno 2: **alucinação** — "28 créditos" no mestrado; o correto é 24), CT30 (turno 2), CT21 (**falso negativo do avaliador**: "Não possuo essa informação no documento" é uma recusa correta não coberta pelo padrão; mantido como registrado, sem recalibrar após a execução oficial). |
 
-Consolidado por caso: `python scripts/consolidar.py` → `results/consolidado.md`.
+Relatórios individuais: `python scripts/consolidar.py 1 2 3 4` → um Word em cada `results/execN/`. O relatório acadêmico Word consolida as quatro execuções; as evidências primárias permanecem em cada diretório `results/execN/`.
+
+## Revisão da exec4 e comparabilidade
+
+A exec4 registra 33 testes, 28 PASS e 5 FAIL: 25/30 experimentais e 3/3 API.
+Falhas: CT09, CT22, CT28, CT29 e CT30. Comando documentado: `python -m robot
+--exclude smoke --outputdir results/exec4 tests/`, com `RESULTADOS_JSONL` próprio.
+XML: 02/11/2026, Robot 7.5.1 / Python 3.11.9 / win32.
+Os JSONLs incluem timestamps com fuso; o XML não declara fuso explicitamente.
+
+Exec1–3: 26/30 experimentais e 4/4 infraestrutura (incluindo smoke), total 30/34.
+Exec4 foi executada no ambiente de outro integrante e em ordem diferente. Não
+há snapshots individuais de toda a configuração remota; o protocolo acima
+registra a configuração declarada, não sua confirmação automática por execução.
+Variações não demonstram melhoria ou regressão.
+
+Correções de interpretação dos registros anteriores: CT28/exec1 é um falso
+positivo (32 créditos com 24 na decomposição); CT21/exec3 é falso negativo
+(recusa válida); CT22 é omissão da área exigida, não demonstra invenção de linhas.
+CT18/exec2 registra similaridade 0,256, distinta de 0,422 da exec1.
+As contagens de JSONL representam respostas registradas, não todas as chamadas
+HTTP; latência exclui pausas e tentativas anteriores.
+
+Fontes atuais: relatórios individuais e relatório acadêmico, derivados de
+XML/JSONL e conferidos contra estatísticas HTML e XMLs parciais.

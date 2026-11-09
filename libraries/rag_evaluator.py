@@ -32,7 +32,7 @@ PADROES_AUSENCIA = [
 PADRAO_CITACAO = r"\b(art\.?|artigo)\s*\d+"
 
 
-def normalizar(texto):
+def normalizar(texto: str) -> str:
     """Minúsculas, sem acentos, sem markdown e com espaços colapsados, para comparações tolerantes.
 
     Também reduz "12 (doze) meses" a "12 meses", estilo de redação do regimento que o modelo copia.
@@ -51,7 +51,7 @@ class RagEvaluator:
         self.casos = {c["id"]: c for c in dados["casos"]}
 
     @keyword("Obter Caso")
-    def obter_caso(self, caso_id):
+    def obter_caso(self, caso_id: str) -> dict:
         if caso_id not in self.casos:
             raise AssertionError(f"Caso {caso_id} não existe em datasets/casos_teste.json")
         caso = self.casos[caso_id]
@@ -60,7 +60,7 @@ class RagEvaluator:
         return caso
 
     @keyword("Validar Caso")
-    def validar_caso(self, criterios, resposta, pular_sem_criterios=True):
+    def validar_caso(self, criterios: dict, resposta: str, pular_sem_criterios: bool = True) -> None:
         """Aplica os critérios declarados no caso (ou em um turno de conversa) à resposta.
 
         Critérios suportados: ``termos_obrigatorios``, ``termos_proibidos``,
@@ -90,12 +90,12 @@ class RagEvaluator:
             raise AssertionError("; ".join(falhas))
 
     @keyword("Reconhece Ausencia De Informacao")
-    def reconhece_ausencia(self, resposta):
+    def reconhece_ausencia(self, resposta: str) -> bool:
         texto = normalizar(resposta)
         return any(re.search(p, texto) for p in PADROES_AUSENCIA)
 
     @keyword("Validar Latencia")
-    def validar_latencia(self, resultados, limite_s):
+    def validar_latencia(self, resultados: list, limite_s: float) -> float:
         latencias = [r["latencia_s"] for r in resultados]
         media = sum(latencias) / len(latencias)
         logger.info(f"Latências (s): {latencias} | média {media:.2f} | máx {max(latencias):.2f}")
@@ -104,7 +104,7 @@ class RagEvaluator:
         return media
 
     @keyword("Validar Consistencia")
-    def validar_consistencia(self, resultados, minimo):
+    def validar_consistencia(self, resultados: list, minimo: float) -> float:
         """Similaridade lexical média entre pares de respostas à mesma pergunta.
 
         É um indicador simples de variabilidade; a consistência factual é verificada

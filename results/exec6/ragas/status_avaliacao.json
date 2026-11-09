@@ -1,0 +1,62 @@
+{
+  "modelo_configurado": "gemini-3.5-flash",
+  "versao_ragas": "0.2.15",
+  "metricas": [
+    "faithfulness",
+    "factual_correctness",
+    "llm_context_precision_with_reference"
+  ],
+  "rpm_configurado": 2,
+  "amostras_elegiveis": 16,
+  "casos_elegiveis": [
+    "CT01",
+    "CT02",
+    "CT03",
+    "CT04",
+    "CT05",
+    "CT06",
+    "CT07",
+    "CT08",
+    "CT09",
+    "CT12",
+    "CT13",
+    "CT20",
+    "CT22",
+    "CT23",
+    "CT24",
+    "CT25"
+  ],
+  "amostras_excluidas": {
+    "caso_nao_elegivel": 23
+  },
+  "avaliacoes_planejadas": 48,
+  "retomada": false,
+  "inicio_em": "2026-11-04T04:42:26.974646+00:00",
+  "atualizado_em": "2026-11-04T05:13:58.224188+00:00",
+  "concluido_em": "2026-11-04T05:13:58.222166+00:00",
+  "validas": 3,
+  "falhas": 44,
+  "ausentes": 1,
+  "estado": "parcial",
+  "avaliacoes_concluidas": 48,
+  "por_metrica": {
+    "faithfulness": {
+      "validos": 2,
+      "falhas": 14,
+      "ausentes": 0,
+      "media": 0.875
+    },
+    "factual_correctness": {
+      "validos": 0,
+      "falhas": 15,
+      "ausentes": 1,
+      "media": null
+    },
+    "llm_context_precision_with_reference": {
+      "validos": 1,
+      "falhas": 15,
+      "ausentes": 0,
+      "media": 1.0
+    }
+  }
+}

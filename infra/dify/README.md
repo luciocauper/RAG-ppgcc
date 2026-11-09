@@ -3,7 +3,9 @@
 Repositório oficial: https://github.com/langgenius/dify
 Guia seguido: https://docs.dify.ai/en/self-host/deploy/quick-start/docker-compose
 
-**Versão usada no experimento: Dify `1.18.0`** (release de 23/10/2026), rodando localmente.
+**Configuração histórica declarada:** Dify `1.18.0`, rodando localmente.
+Este guia descreve o ambiente original; não comprova a configuração remota de cada execução.
+Para instalação Python, testes e relatórios, use o [README principal](../../README.md).
 **Modelos: remotos, via API do Google Gemini no plano gratuito** (LLM e embeddings).
 
 ## Arquitetura do ambiente
@@ -85,11 +87,12 @@ docker compose up -d
    recuperação (vetorial / full-text / híbrida), Top K, score threshold e rerank. Conferir na
    pré-visualização se os artigos (ex.: Art. 35 e Art. 39) aparecem legíveis.
 5. **Aplicação:** *Studio > Create App > Chatbot*:
-   - *Instructions*: prompt de `docs/prompt_sistema.md` (versão congelada).
+   - *Instructions*: conteúdo de `docs/prompt_sistema.txt` (versão congelada; explicação no `.md`).
    - *Context*: a base do regimento.
    - *Features*: habilitar **Citations and Attributions** (sem isso a API não devolve
      `retriever_resources` e o Ragas fica sem contexto).
-   - Modelo `gemini-3.5-flash-lite`, temperatura 0 → *Publish*.
+   - Modelo `gemini-3.5-flash-lite` → *Publish*. O protocolo registra que o plugin usado
+     não expõe temperatura para esse modelo; não presumir temperatura zero.
 6. **API:** no app, *API Access > API Key > Create* e copiar a chave para o `.env` da raiz:
    ```
    DIFY_API_URL=http://localhost/v1
