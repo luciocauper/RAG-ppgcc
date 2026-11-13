@@ -22,17 +22,22 @@ documento `datasets/documentos/Regimento_PPGCC-UECE2021.pdf`.
 | Limites do plano gratuito (RPM / RPD), conforme AI Studio na data |60/100 |
 | Chunking (modo / tamanho / sobreposição) | General (custom) — separador `\n\n`, máx. 1024 tokens, sobreposição 100; remove espaços extras: sim; remove URLs/e-mails: não |
 | Resultado da indexação | High Quality (`gemini-embedding-001`); 47 chunks (235–1022 caracteres, média 813); 16.242 tokens |
-| Recuperação (vetorial / full-text / híbrida) | Hybrid Search (configurado no Dify em 29/10/2026 — ver nota abaixo) |
-| Top K / score threshold / rerank | 4 / desligado / sem rerank (Gemini não oferece modelo de rerank) |
+| Recuperação na base de conhecimento (efetiva) | **Pesquisa Vetorial**, Top K **3**, limiar de pontuação desligado, sem modelo de reordenação (conferido no painel em 12/11/2026 — `docs/figuras/config_dify_base_conhecimento.png`) |
+| Recuperação no aplicativo (Chatbot) | Recuperação de vários caminhos com Pontuação Ponderada (semântico 0,7 / palavra-chave 0,3), Top K 4, limiar desligado (`docs/figuras/config_dify_chatbot.png`) |
 | Versão do prompt de sistema | 1.0 (`docs/prompt_sistema.md`) |
 | LLM juiz do Ragas | Gemini — `gemini-3.5-flash` (modelo diferente e mais capaz que o do SUT, para reduzir viés de autoavaliação; mesma família, o que fica como ameaça à validade) |
 | Versões de Python / Robot Framework / Ragas | Python 3.12.10 · Robot Framework 7.x · Ragas 0.2.x · pytest 9.2.0 |
 
 Observações sobre a base de conhecimento:
 
-- A criação inicial salvou Semantic Search com Top K = 3. Foi alterada para Hybrid / Top K = 4 antes
-  dos testes porque o CT09 depende de recuperar, juntos, os trechos do Art. 35 e do Art. 39, que
-  ficam em chunks diferentes.
+- A criação inicial salvou Semantic Search com Top K = 3. Antes dos testes, a configuração foi alterada
+  para pontuação ponderada (0,7/0,3) e Top K = 4 **no aplicativo**, porque o CT09 depende de recuperar,
+  juntos, os trechos do Art. 35 e do Art. 39, que ficam em chunks diferentes. A configuração **da base**
+  permaneceu Pesquisa Vetorial com Top K = 3 (conferência em 12/11/2026).
+- Correção (auditoria de 12/11/2026): a base é consultada com a própria configuração e devolve 3 trechos;
+  a pontuação ponderada do app reordena esses candidatos e o Top K 4 do app atua apenas como teto.
+  Nenhuma busca por palavra-chave foi executada. Isso é coerente com os 235 registros JSONL de exec1–exec6,
+  todos com exatamente 3 trechos. A recuperação efetiva das seis execuções foi, portanto, vetorial com Top K 3.
 - O texto extraído do PDF traz "Art. 3 9." (espaço dentro do número). O chunk 35 termina em
   "Art. 39." e o chunk 36 começa em "39. O desempenho..." — a alínea d (30º mês) fica no chunk 36 sem
   o rótulo completo do artigo. Considerar na análise de falhas de citação do CT09.
