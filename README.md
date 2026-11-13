@@ -22,7 +22,9 @@ output.xml + respostas.jsonl -> scripts/consolidar.py -> Word por execução
 ## Tecnologias
 
 Python, Robot Framework, pytest, requests, python-docx, python-pptx e Pillow.
-Ragas é um avaliador complementar opcional; não há métricas Ragas nesta entrega.
+Ragas 0.2.15 é o avaliador semântico complementar. Há apenas um piloto (exec5, 1 amostra) e uma
+avaliação parcial (exec6: 3 de 48 avaliações válidas, limitada pela cota do plano gratuito);
+não há base para conclusões semânticas globais.
 
 ## Pré-requisitos e ambiente
 
@@ -63,15 +65,25 @@ Execução real, que consome a API, é opcional:
 .\.venv\Scripts\python.exe scripts/gerar_apresentacao.py
 ```
 
-O relatório acadêmico é `results/Relatorio_Final_Testes_RAG_PPGCC.docx`.
+Versões revisadas (auditoria das seis execuções; números derivados por `scripts/auditoria.py`):
+
+```powershell
+.\.venv\Scripts\python.exe scripts/gerar_relatorio_revisado.py
+.\.venv\Scripts\python.exe scripts/gerar_apresentacao_revisada.py
+```
+
+O relatório acadêmico revisado é `results/Relatorio_Final_Testes_RAG_PPGCC_Revisado.docx`
+(a versão anterior, `results/Relatorio_Final_Testes_RAG_PPGCC.docx`, foi preservada).
+Figuras do relatório ficam em `docs/figuras/`.
 Cada execução tem seu Word individual em `results/execN/`. A apresentação e o roteiro
 de 15 minutos ficam em `apresentação/`.
 
 ## Evidências
 
-As quatro execuções oficiais estão em `results/exec1` a `results/exec4`, com XML, HTML,
-JSONL e documentos Word. Não confunda os testes de API/infraestrutura com os 30 casos
-experimentais. Exec1–3 tiveram 26/30 casos experimentais aprovados; exec4, 25/30.
+As seis execuções oficiais estão em `results/exec1` a `results/exec6`, com XML, HTML e
+JSONL (exec6 também com metadata.json, smoke, pytest e Ragas). Não confunda os testes de
+API/infraestrutura com os 30 casos experimentais. Exec1–3 tiveram 26/30 casos experimentais
+aprovados; exec4, 25/30; exec5 e exec6, 27/30.
 
 ## Estrutura
 

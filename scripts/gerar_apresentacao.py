@@ -9,7 +9,7 @@ from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.util import Inches, Pt
 
-from consolidar import descobrir_execucoes, ler_execucao, resumo
+from consolidar import descobrir_execucoes, ler_execucao, resumo, resumo_ragas
 
 RAIZ = Path(__file__).resolve().parent.parent
 SAIDA = RAIZ / "apresentação" / "Apresentacao_Tecnica_RAG_PPGCC.pptx"
@@ -94,21 +94,87 @@ def _nota(slide, roteiro, titulo, tempo, fala):
       roteiro.extend([f"## {numero}. {titulo} ({tempo})", "", fala, ""])
 
 
-def _barra_resultado(slide, y, label, values, denominador, color, label_x=.8, bar_x=4.0):
+def _barra_resultado(slide, y, label, values, denominador, color, label_x=.8, bar_x=4.0,
+                     largura_total=8.2):
       texto(slide, label, label_x, y-.02, 2.75, .32, 15, INK, negrito=True)
+      passo = largura_total / max(len(values), 1)
+      largura = passo * .72
       for i, value in enumerate(values):
-            x = bar_x + i * 2.05
-            _rect(slide, x, y, 1.34, .25, LINE, rounded=True)
+            x = bar_x + i * passo
+            _rect(slide, x, y, largura, .25, LINE, rounded=True)
             if value:
-                  _rect(slide, x, y, 1.34 * value / denominador, .25, color, rounded=True)
-            texto(slide, f"{value}/{denominador}", x, y+.32, 1.34, .25, 11, INK,
+                  _rect(slide, x, y, largura * value / denominador, .25, color, rounded=True)
+            texto(slide, f"{value}/{denominador}", x, y+.32, largura, .25, 11, INK,
                     negrito=True, alinhamento=PP_ALIGN.CENTER)
+
+
+def _rotulos_exec(slide, es, y, bar_x=4.0, largura_total=8.2):
+      passo = largura_total / max(len(es), 1)
+      for i, e in enumerate(es):
+            texto(slide, f"EXEC {e['numero']}", bar_x+i*passo, y, passo*.72, .24, 9, MUTED,
+                  negrito=True, alinhamento=PP_ALIGN.CENTER)
+
+
+def _faixas(numeros):
+      """[2, 3, 4, 5, 6] -> 'exec2–6'; [1, 4] -> 'exec1 e exec4'."""
+      numeros = sorted(numeros)
+      grupos = []
+      for n in numeros:
+            if grupos and n == grupos[-1][-1] + 1:
+                  grupos[-1].append(n)
+            else:
+                  grupos.append([n])
+      partes = [f"exec{g[0]}" if len(g) == 1 else f"exec{g[0]}–{g[-1]}" for g in grupos]
+      if len(partes) <= 1:
+            return "".join(partes)
+      return ", ".join(partes[:-1]) + " e " + partes[-1]
+
+
+def _lista(valores):
+      valores = [str(v) for v in valores]
+      return valores[0] if len(valores) == 1 else ", ".join(valores[:-1]) + " e " + valores[-1]
+
+
+def _por_categoria(es, categoria):
+      return [sum(t["status"] == "PASS" for t in e["testes"] if t["categoria"] == categoria)
+              for e in es]
+
+
+def _falhas_caso(es, caso):
+      return [e["numero"] for e in es
+              if any(t["id"] == caso and t["status"] == "FAIL" for t in e["testes"])]
 
 
 def gerar():
     es = [ler_execucao(n) for n in descobrir_execucoes()]
-    if len(es) != 4:
-        raise ValueError(f"Esperadas quatro execuções oficiais; encontradas {len(es)}.")
+    if not es:
+        raise ValueError("Nenhuma execução oficial encontrada em results/exec*/output.xml.")
+    n_exec = len(es)
+    numeros = [e["numero"] for e in es]
+
+    def onde(execs):
+        return f"nas {n_exec} execuções" if len(execs) == n_exec else (
+            f"na {_faixas(execs)}" if len(execs) == 1 else f"nas {_faixas(execs)}")
+
+    # Ragas: agrega somente execuções com avaliação registrada (sem converter falhas em zero).
+    ragas = []
+    for e in es:
+        r = resumo_ragas(e["pasta"])
+        if r["estado"] != "não avaliada":
+            m = r["por_metrica"]
+            validas = sum(d.get("validos", 0) for d in m.values())
+            planejadas = validas + sum(d.get("falhas", 0) + d.get("ausentes", 0) for d in m.values())
+            ragas.append(dict(numero=e["numero"], estado=r["estado"], validas=validas,
+                              planejadas=planejadas, modelo=r["modelo"], metricas=m))
+    if ragas:
+        rg = ragas[-1]
+        ragas_curto = f"Ragas: piloto parcial (exec{rg['numero']})"
+        ragas_frase = (f"Ragas rodou como piloto na exec{rg['numero']}: {rg['validas']} de "
+                       f"{rg['planejadas']} avaliações válidas; as demais falharam por cota do "
+                       f"plano gratuito do Gemini (HTTP 429). Não há base para conclusão semântica.")
+    else:
+        ragas_curto = "Ragas não executado"
+        ragas_frase = "Ragas está implementado, mas não foi executado e não gerou métricas."
     prs = Presentation()
     prs.slide_width, prs.slide_height = Inches(13.333), Inches(7.5)
     roteiro = ["# Roteiro oral — 15 minutos", "",
@@ -142,17 +208,19 @@ def gerar():
     texto(s, "CENÁRIOS\nEXPERIMENTAIS", 9.9, 3.05, 2.0, .72, 12, WHITE, negrito=True,
           alinhamento=PP_ALIGN.CENTER)
     _rect(s, 10.1, 4.02, 1.65, .015, RGBColor.from_string("60747A"))
-    texto(s, "04", 10.0, 4.28, 1.8, .74, 38, TEAL, FONT_DISPLAY, True,
+    texto(s, f"{n_exec:02d}", 10.0, 4.28, 1.8, .74, 38, TEAL, FONT_DISPLAY, True,
           alinhamento=PP_ALIGN.CENTER)
     texto(s, "EXECUÇÕES", 10.0, 5.06, 1.8, .28, 11, WHITE, negrito=True,
           alinhamento=PP_ALIGN.CENTER)
-    texto(s, "Dify RAG   /   resultados determinísticos   /   Ragas não executado",
+    texto(s, f"Dify RAG   /   resultados determinísticos   /   {ragas_curto}",
           .82, 6.55, 8.4, .3, 11, RGBColor.from_string("B9CCC7"))
     _rodape(s, 1, 12, True)
     _nota(s, roteiro, "Avaliação automatizada da qualidade de um sistema RAG", "0:45",
           "Abra pelo escopo: um assistente RAG sobre o regimento do PPGCC, avaliado com Robot Framework. "
-          "Foram conduzidas quatro execuções oficiais de 30 casos cada. O trabalho mede comportamento "
-          "observado nos critérios e documentos disponíveis; não certifica o sistema nem apresenta métricas Ragas.")
+          f"Foram conduzidas {n_exec} execuções oficiais de 30 casos cada. O trabalho mede comportamento "
+          "observado nos critérios e documentos disponíveis; não certifica o sistema. "
+          + ("As métricas Ragas aparecem apenas como piloto parcial, sem peso conclusivo."
+             if ragas else "Não apresenta métricas Ragas."))
 
     # 2. Problema do oráculo
     s = _slide(prs, "Motivação", "Presença de termos não é evidência de verdade",
@@ -188,7 +256,9 @@ def gerar():
           "QP2: Como o assistente RAG se comporta diante de entradas ambíguas, contraditórias ou potencialmente maliciosas? "
           "QP3: Em que medida o assistente RAG preserva o contexto e a coerência das respostas em interações com múltiplos turnos? "
           "A latência é complementar. "
-          "Como Ragas não foi executado, não há comparação empírica entre oráculos semântico e determinístico.")
+          + ("Como o Ragas teve apenas um piloto parcial, limitado pela cota, não há comparação empírica robusta "
+             "entre oráculos semântico e determinístico." if ragas else
+             "Como Ragas não foi executado, não há comparação empírica entre oráculos semântico e determinístico."))
 
     # 4. Sistema sob teste
     s = _slide(prs, "Sistema sob teste", "Recuperação e geração são fontes distintas de erro",
@@ -219,7 +289,10 @@ def gerar():
 
     # 5. Desenho experimental
     s = _slide(prs, "Método", "30 cenários em seis categorias",
-               "Um regimento; critérios determinísticos por caso; quatro execuções com diferenças documentadas.")
+               f"Um regimento; critérios determinísticos por caso; {n_exec} execuções com diferenças documentadas.")
+    com_smoke = [e["numero"] for e in es if sum(not t["experimental"] for t in e["testes"]) >= 4]
+    sem_smoke = [n for n in numeros if n not in com_smoke]
+    infra = {e["numero"]: sum(not t["experimental"] for t in e["testes"]) for e in es}
     categories = [("Factual", 9, CORAL), ("Alucinação", 5, MUSTARD), ("Robustez", 5, TEAL),
                   ("Segurança", 4, BLUE), ("Conversa", 4, CORAL), ("Desempenho", 3, MUSTARD)]
     for i, (label, count, accent) in enumerate(categories):
@@ -231,12 +304,17 @@ def gerar():
     _rect(s, 9.35, 2.02, .02, 3.5, LINE)
     texto(s, "30", 9.72, 2.08, 1.5, .74, 42, INK, FONT_DISPLAY, True)
     texto(s, "casos CT\nseis dimensões", 9.76, 2.92, 2.3, .62, 15, MUTED)
-    texto(s, "Exec1–3: incluem smoke nos totais brutos. Exec4: sem smoke.\nComparação de qualidade usa sempre 30 cenários experimentais.",
-          9.75, 4.13, 2.55, 1.05, 12, INK)
+    smoke_txt = " ".join(filter(None, [
+        f"{_faixas(com_smoke).capitalize()}: incluem smoke nos totais brutos." if com_smoke else "",
+        f"{_faixas(sem_smoke).capitalize()}: sem smoke." if sem_smoke else ""]))
+    texto(s, smoke_txt + "\nComparação de qualidade usa sempre 30 cenários experimentais.",
+          9.75, 4.13, 2.55, 1.25, 12, INK)
     _nota(s, roteiro, "Desenho experimental e cobertura", "1:15",
           "A suíte contém 30 casos experimentais: nove factuais, cinco de alucinação, cinco robustos, quatro de segurança, "
-          "quatro conversacionais e três de desempenho. Execuções 1 a 3 também têm quatro testes de API, incluindo smoke; "
-          "execução 4 tem três. Por isso comparamos sempre os 30 cenários, não totais brutos diferentes.")
+          "quatro conversacionais e três de desempenho. "
+          + (f"As {_faixas(com_smoke)} também têm {infra[com_smoke[0]]} testes de API, incluindo smoke; " if com_smoke else "")
+          + (f"as {_faixas(sem_smoke)} têm {infra[sem_smoke[0]]}. " if sem_smoke else "")
+          + "Por isso comparamos sempre os 30 cenários, não totais brutos diferentes.")
 
     # 6. BDD e oráculos
     s = _slide(prs, "Automação", "BDD rastreia a pergunta até o critério",
@@ -259,48 +337,52 @@ def gerar():
           6.48, 2.6, 5.3, .77, 18, INK, FONT_DISPLAY, True)
     _rect(s, 6.48, 3.75, 5.65, .012, LINE)
     texto(s, "RAGAS / LLM JUIZ", 6.48, 4.02, 3.1, .27, 10, TEAL, negrito=True)
-    texto(s, "Implementado; não executado.\nNenhuma métrica semântica reportada.",
-          6.48, 4.42, 5.4, .68, 15, MUTED)
+    if ragas:
+        ragas_slide = (f"Piloto na exec{rg['numero']}: {rg['validas']}/{rg['planejadas']} avaliações válidas.\n"
+                       "Demais bloqueadas por cota (HTTP 429) — sem conclusão semântica.")
+    else:
+        ragas_slide = "Implementado; não executado.\nNenhuma métrica semântica reportada."
+    texto(s, ragas_slide, 6.48, 4.42, 5.4, .9, 15, MUTED)
     _nota(s, roteiro, "BDD e limites do oráculo", "1:15",
           "As suítes expressam Given, When e Then; keywords compartilhadas chamam o cliente e o avaliador Python. "
           "Os critérios cobrem termos, ausência, citação, latência e similaridade. Um PASS significa que o critério passou; "
-          "não demonstra todas as relações factuais. Ragas está implementado, mas não foi executado e não gerou métricas.")
+          "não demonstra todas as relações factuais. " + ragas_frase)
 
     # 7. QP1
-    factual = [sum(t["status"] == "PASS" for t in e["testes"] if t["categoria"] == "factual") for e in es]
-    hallucination = [sum(t["status"] == "PASS" for t in e["testes"] if t["categoria"] == "alucinacao") for e in es]
+    factual = _por_categoria(es, "factual")
+    hallucination = _por_categoria(es, "alucinacao")
+    ct09, ct21, ct22 = (_falhas_caso(es, c) for c in ("CT09", "CT21", "CT22"))
     s = _slide(prs, "QP1 · Qualidade das respostas", "Resultados parciais nos critérios determinísticos",
                qps[0][2])
-    for i, e in enumerate(es):
-        texto(s, f"EXEC {e['numero']}", 4.0+i*2.05, 2.08, 1.34, .24, 9, MUTED, negrito=True,
-              alinhamento=PP_ALIGN.CENTER)
+    _rotulos_exec(s, es, 2.08)
     _barra_resultado(s, 2.63, "Factualidade", factual, 9, CORAL)
     _barra_resultado(s, 3.62, "Alucinação", hallucination, 5, MUSTARD)
     _rect(s, .88, 4.48, 3.67, 1.35, WHITE, rounded=True)
-    texto(s, "CT09 · 4/4 FAIL", 1.12, 4.7, 3.16, .26, 12, CORAL, negrito=True)
+    texto(s, f"CT09 · {len(ct09)}/{n_exec} FAIL", 1.12, 4.7, 3.16, .26, 12, CORAL, negrito=True)
     texto(s, "A contradição 30/36 meses não foi reconhecida.", 1.12, 5.08, 3.15, .55, 13, INK)
     _rect(s, 4.83, 4.48, 3.67, 1.35, WHITE, rounded=True)
-    texto(s, "CT22 · exec1 e exec4", 5.08, 4.7, 3.16, .26, 12, MUSTARD, negrito=True)
+    texto(s, f"CT22 · {_faixas(ct22) or 'sem falhas'}", 5.08, 4.7, 3.16, .26, 12, MUSTARD, negrito=True)
     texto(s, "Omissão de completude; não prova invenção de linhas.", 5.08, 5.08, 3.15, .55, 13, INK)
     _rect(s, 8.78, 4.48, 3.67, 1.35, WHITE, rounded=True)
-    texto(s, "CT21 · exec3", 9.02, 4.7, 3.16, .26, 12, TEAL, negrito=True)
+    texto(s, f"CT21 · {_faixas(ct21) or 'sem falhas'}", 9.02, 4.7, 3.16, .26, 12, TEAL, negrito=True)
     texto(s, "Recusa válida reprovada pelo padrão de ausência.", 9.02, 5.08, 3.15, .55, 13, INK)
-    texto(s, "TOTAL CT01–CT30   ·   EXEC1  26/30     EXEC2  26/30     EXEC3  26/30     EXEC4  25/30",
-          .98, 6.05, 11.25, .34, 12, INK, negrito=True)
+    totais = [resumo([t for t in e["testes"] if t["experimental"]]) for e in es]
+    texto(s, "TOTAL CT01–CT30   ·   " + "    ".join(
+              f"EXEC{e['numero']}  {r[1]}/{r[0]}" for e, r in zip(es, totais)),
+          .98, 6.05, 11.25, .34, 11, INK, negrito=True)
     _nota(s, roteiro, "QP1 — Qualidade das respostas", "1:30",
-          "A factualidade passou em oito de nove casos em cada execução. Alucinação passou em quatro de cinco, cinco de cinco, "
-          "quatro de cinco e quatro de cinco. CT09 falhou em todas; CT22, na primeira e quarta. O quadro não esgota a qualidade: "
+          f"A factualidade passou em {_lista(f'{v}/9' for v in factual)} casos nas {n_exec} execuções. "
+          f"Alucinação passou em {_lista(f'{v}/5' for v in hallucination)}. "
+          f"CT09 falhou {onde(ct09)}; CT22, {onde(ct22)}. O quadro não esgota a qualidade: "
           "CT28 da primeira execução passou apesar do total incorreto, e CT21 da terceira rejeitou uma recusa adequada. "
           "Assim, a resposta à QP1 é parcial e limitada pelos oráculos lexicais.")
 
     # 8. QP2
-    robustness = [sum(t["status"] == "PASS" for t in e["testes"] if t["categoria"] == "robustez") for e in es]
-    security = [sum(t["status"] == "PASS" for t in e["testes"] if t["categoria"] == "seguranca") for e in es]
+    robustness = _por_categoria(es, "robustez")
+    security = _por_categoria(es, "seguranca")
     s = _slide(prs, "QP2 · Robustez e segurança", "Os casos selecionados passaram",
                qps[1][2])
-    for i, e in enumerate(es):
-        texto(s, f"EXEC {e['numero']}", 4.0+i*2.05, 2.34, 1.34, .24, 9, MUTED, negrito=True,
-              alinhamento=PP_ALIGN.CENTER)
+    _rotulos_exec(s, es, 2.34)
     _barra_resultado(s, 2.93, "Robustez", robustness, 5, TEAL)
     _barra_resultado(s, 4.05, "Segurança", security, 4, BLUE)
     _rect(s, .9, 5.2, .09, .65, MUSTARD)
@@ -308,66 +390,80 @@ def gerar():
     texto(s, "Passar nestes cenários não prova ausência geral de vulnerabilidades nem cobre entradas fora do conjunto testado.",
           3.48, 5.18, 8.55, .65, 14, MUTED)
     _nota(s, roteiro, "QP2 — Robustez e segurança", "1:00",
-          "Robustez teve cinco de cinco aprovações e segurança quatro de quatro em cada execução. Isso sustenta a conclusão "
+          f"Robustez teve {_lista(f'{v}/5' for v in robustness)} aprovações e segurança "
+          f"{_lista(f'{v}/4' for v in security)}, ao longo das {n_exec} execuções. Isso sustenta a conclusão "
           "de que os casos selecionados passaram os critérios determinísticos. Não equivale a uma avaliação ampla de segurança, "
           "nem permite afirmar que não existam vulnerabilidades ou comportamento adversarial não coberto.")
 
     # 9. QP3
-    conversation = [sum(t["status"] == "PASS" for t in e["testes"] if t["categoria"] == "conversa") for e in es]
+    conversation = _por_categoria(es, "conversa")
+    falhas_conv = {c: _falhas_caso(es, c) for c in ("CT30", "CT28", "CT29", "CT16")}
     s = _slide(prs, "QP3 · Consistência conversacional", "O contexto multi-turno foi o ponto fraco",
                qps[2][2])
     texto(s, "CASOS PASS NA CATEGORIA CONVERSA", .98, 2.16, 6.7, .24, 10, CORAL, negrito=True)
+    passo = 7.1 / n_exec
+    largura = passo * .72
     for i, (e, value) in enumerate(zip(es, conversation)):
-        x = 1.08 + i*1.72
-        texto(s, f"EXEC {e['numero']}", x, 2.56, 1.24, .22, 9, MUTED, negrito=True,
+        x = 1.08 + i*passo
+        texto(s, f"EXEC {e['numero']}", x, 2.56, largura, .22, 9, MUTED, negrito=True,
               alinhamento=PP_ALIGN.CENTER)
-        _rect(s, x, 2.92, 1.24, 1.18, LINE, rounded=True)
+        _rect(s, x, 2.92, largura, 1.18, LINE, rounded=True)
         if value:
             height = 1.18*value/4
-            _rect(s, x, 2.92+1.18-height, 1.24, height, CORAL, rounded=True)
-        texto(s, f"{value}/4", x, 4.26, 1.24, .28, 12, INK, negrito=True,
+            _rect(s, x, 2.92+1.18-height, largura, height, CORAL, rounded=True)
+        texto(s, f"{value}/4", x, 4.26, largura, .28, 12, INK, negrito=True,
               alinhamento=PP_ALIGN.CENTER)
     _rect(s, 8.65, 2.3, .02, 2.7, LINE)
     texto(s, "FALHAS OBSERVADAS", 9.05, 2.32, 2.8, .25, 10, CORAL, negrito=True)
-    texto(s, "CT30  ·  falha nas quatro execuções\nCT28  ·  falha nas exec2–4\nCT29  ·  falha na exec4",
-          9.05, 2.78, 3.2, 1.2, 14, INK, negrito=True)
+    linhas_falha = [f"{c}  ·  falha {onde(f)}" for c, f in falhas_conv.items() if f]
+    texto(s, "\n".join(linhas_falha), 9.05, 2.78, 3.4, 1.2, 14, INK, negrito=True)
     texto(s, "CT28/exec1 passou com resposta factualmente incorreta.",
-          .98, 4.2, 7.05, .38, 12, MUSTARD, negrito=True)
+          .98, 4.72, 7.05, .38, 12, MUSTARD, negrito=True)
     texto(s, "Hipótese: recuperação insuficiente em elipse/anáfora. As evidências não revelam o mecanismo interno do Dify.",
-          .98, 5.05, 11.2, .55, 14, MUTED)
+          .98, 5.3, 11.2, .55, 14, MUTED)
     _nota(s, roteiro, "QP3 — Consistência conversacional", "1:30",
-          "A categoria passou em três de quatro casos na primeira execução, dois de quatro na segunda e terceira, e um de quatro na quarta. "
-          "CT30 falhou em todas; CT28 em execuções posteriores; CT29 na quarta. CT28/exec1 passou com total errado. Contextos observáveis "
+          f"A categoria passou em {_lista(f'{v}/4' for v in conversation)} casos, da exec{numeros[0]} à exec{numeros[-1]}. "
+          + "; ".join(f"{c} falhou {onde(f)}" for c, f in falhas_conv.items() if f)
+          + ". CT28/exec1 passou com total errado. Contextos observáveis "
           "sustentam hipótese de recuperação insuficiente em perguntas elípticas, mas não provam o caminho interno da busca no Dify.")
 
     # 10. Desempenho complementar
     s = _slide(prs, "Dimensão complementar · Desempenho", "Latência é descritiva, não uma QP separada",
                "Médias/máximas calculadas sobre respostas JSONL registradas; não incluem pausas nem chamadas sem registro.")
+    passo = 11.55 / n_exec
+    card = passo - .17
+    estat = []
     for i, e in enumerate(es):
-        x = .9 + i*3.1
+        x = .9 + i*passo
         lat = [r["latencia_s"] for r in e["respostas"] if isinstance(r.get("latencia_s"), (int, float))]
         mean = sum(lat)/len(lat) if lat else 0
         maximum = max(lat) if lat else 0
-        passed, total = resumo([t for t in e["testes"] if t["categoria"] == "desempenho"])[1:3]
-        _rect(s, x, 2.25, 2.75, 2.48, WHITE, rounded=True)
-        texto(s, f"EXEC {e['numero']}", x+.22, 2.52, 1.8, .25, 10, TEAL, negrito=True)
-        texto(s, f"{mean:.2f}s", x+.2, 2.98, 2.25, .62, 30, INK, FONT_DISPLAY, True)
-        texto(s, f"média  ·  máximo {maximum:.2f}s", x+.23, 3.7, 2.36, .34, 11, MUTED)
-        texto(s, f"CT17–19  {passed}/{total}", x+.23, 4.2, 2.35, .32, 12, CORAL, negrito=True)
+        total, passed = resumo([t for t in e["testes"] if t["categoria"] == "desempenho"])[:2]
+        estat.append((e["numero"], mean, maximum, passed, total))
+        _rect(s, x, 2.25, card, 2.48, WHITE, rounded=True)
+        texto(s, f"EXEC {e['numero']}", x+.18, 2.52, card-.3, .25, 10, TEAL, negrito=True)
+        texto(s, f"{mean:.2f}s", x+.16, 2.92, card-.25, .62, 30 if n_exec <= 4 else 24,
+              INK, FONT_DISPLAY, True)
+        texto(s, f"média\nmáximo {maximum:.2f}s", x+.18, 3.55, card-.3, .55, 11, MUTED)
+        texto(s, f"CT17–19  {passed}/{total}", x+.18, 4.2, card-.3, .32, 12, CORAL, negrito=True)
     texto(s, "Variações entre execuções não demonstram regressão: ambiente, ordem e carga não foram controlados de forma equivalente.",
           .98, 5.42, 11.2, .56, 14, INK, negrito=True)
+    mais_lenta = max(estat, key=lambda x: x[2])
     _nota(s, roteiro, "Desempenho como dimensão complementar", "1:15",
-          "O desempenho teve dois de três, dois de três, três de três e três de três aprovações. As médias JSONL variaram, "
-          "e a quarta execução teve uma máxima maior; são estatísticas descritivas das respostas registradas. Pausas e chamadas "
-          "sem registro ficam fora. Como ambiente e ordem variaram, não inferimos regressão de modelo.")
+          f"O desempenho teve {_lista(f'{p}/{t}' for _, _, _, p, t in estat)} aprovações. "
+          f"As médias JSONL variaram de {min(x[1] for x in estat):.2f} a {max(x[1] for x in estat):.2f} segundos, "
+          f"e a exec{mais_lenta[0]} teve a maior máxima ({mais_lenta[2]:.1f} s); são estatísticas descritivas das respostas registradas. "
+          "Pausas e chamadas sem registro ficam fora. Como ambiente e ordem variaram, não inferimos regressão de modelo.")
 
     # 11. Limitações
     s = _slide(prs, "Limitações", "O que as evidências não permitem afirmar",
                "A validade depende do escopo de casos, da regra de aceitação e da configuração observável.", dark=True)
     limits = [("ORÁCULO", "Termos presentes não provam relações corretas; CT28/exec1 expõe falso positivo.", CORAL),
-              ("RAGAS", "Não executado; nenhuma validação semântica quantitativa nesta entrega.", TEAL),
+              ("RAGAS", (f"Só piloto na exec{rg['numero']} ({rg['validas']}/{rg['planejadas']} válidas, cota); "
+                         "sem validação semântica quantitativa." if ragas else
+                         "Não executado; nenhuma validação semântica quantitativa nesta entrega."), TEAL),
               ("SISTEMA", "Um regimento e configurações remotas sem snapshot completo por execução.", MUSTARD),
-              ("COMPARAÇÃO", "Quatro repetições não isolam efeito de ambiente, ordem ou carga.", BLUE)]
+              ("COMPARAÇÃO", f"{n_exec} repetições não isolam efeito de ambiente, ordem ou carga.", BLUE)]
     for i, (label, explanation, accent) in enumerate(limits):
         col, row = i % 2, i // 2
         x, y = .95 + col*6.05, 2.25 + row*1.72
@@ -375,7 +471,9 @@ def gerar():
         texto(s, label, x+.28, y+.02, 2.8, .24, 10, accent, negrito=True)
         texto(s, explanation, x+.28, y+.38, 4.95, .76, 15, WHITE, FONT_BODY)
     _nota(s, roteiro, "Limitações e validade", "1:30",
-          "Quatro limites devem acompanhar a leitura: oráculos lexicais podem aceitar erro e rejeitar recusa válida; Ragas não foi executado; "
+          "Quatro limites devem acompanhar a leitura: oráculos lexicais podem aceitar erro e rejeitar recusa válida; "
+          + ("o Ragas teve apenas um piloto parcial, com a maioria das avaliações bloqueada por cota; " if ragas
+             else "Ragas não foi executado; ") +
           "o experimento usa um documento e não tem snapshot remoto completo; diferenças de totais não isolam causa. São resultados observados "
           "no desenho usado, não estimativas universais do comportamento de sistemas RAG.")
 
@@ -392,7 +490,8 @@ def gerar():
         texto(s, detail, 4.7, y, 7.35, .54, 14, INK)
         if i < 2:
             _rect(s, .98, y+.79, 11.1, .012, LINE)
-    texto(s, "Próximo estudo: recuperação com histórico e oráculos semânticos sob configuração congelada. Ragas permanece pendente.",
+    texto(s, "Próximo estudo: recuperação com histórico e oráculos semânticos sob configuração congelada. "
+          + ("Ragas completo depende de cota além do plano gratuito." if ragas else "Ragas permanece pendente."),
           .98, 5.83, 11.15, .42, 12, MUTED, negrito=True)
     _nota(s, roteiro, "Conclusões", "1:30",
           "Responda diretamente: QP1, evidência parcialmente favorável mas limitada por erros e oráculos; QP2, os casos de robustez e segurança "
